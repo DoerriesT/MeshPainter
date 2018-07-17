@@ -30,7 +30,7 @@ void GLMesh::enableVertexAttribArrays() const
 
 void GLMesh::render() const
 {
-	glDrawElements(GL_TRIANGLES, (GLsizei)indexedMesh.indices.size(), GL_UNSIGNED_INT, NULL);
+	funcs->glDrawElements(GL_TRIANGLES, (GLsizei)indexedMesh.indices.size(), GL_UNSIGNED_INT, NULL);
 }
 
 GLMesh::GLMesh(const IndexedMesh &_indexedMesh)

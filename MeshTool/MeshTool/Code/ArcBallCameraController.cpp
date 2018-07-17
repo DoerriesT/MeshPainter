@@ -10,7 +10,7 @@ ArcBallCameraController::ArcBallCameraController(const std::shared_ptr<Camera> &
 
 void ArcBallCameraController::update(const glm::vec2 &_mouseDelta, float _scrollDelta, bool _translateCenter)
 {
-	const float SCROLL_DELTA_MULT = -0.0001f;
+	const float SCROLL_DELTA_MULT = -0.0005f;
 	const float MOUSE_DELTA_MULT = 0.01f;
 	distance += _scrollDelta * SCROLL_DELTA_MULT;
 	distance = glm::max(0.0f, distance);

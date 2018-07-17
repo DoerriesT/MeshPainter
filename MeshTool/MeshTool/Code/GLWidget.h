@@ -37,10 +37,18 @@ private:
 
 	std::shared_ptr<GLMesh> mesh;
 
+	GLuint gridVAO;
+	GLuint gridVBO;
+	GLuint axisVAO;
+	GLuint axisVBO;
+
 	std::shared_ptr<ShaderProgram> testShader;
+	std::shared_ptr<ShaderProgram> gridShader;
 
 	Uniform<glm::mat4> uModelViewProjection = Uniform<glm::mat4>("uModelViewProjection");
 	Uniform<glm::mat4> uModel = Uniform<glm::mat4>("uModel");
 	Uniform<glm::vec3> uCamPos = Uniform<glm::vec3>("uCamPos");
 	Uniform<GLboolean> uLineMode = Uniform<GLboolean>("uLineMode");
+
+	Uniform<glm::mat4> uModelViewProjectionG = Uniform<glm::mat4>("uModelViewProjection");
 };
