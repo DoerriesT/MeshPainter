@@ -116,5 +116,11 @@
     <None Include="Resources\Shaders\test.vert">
       <Filter>Resources\Shaders</Filter>
     </None>
+    <None Include="Resources\Shaders\grid.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\grid.vert">
+      <Filter>Resources\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

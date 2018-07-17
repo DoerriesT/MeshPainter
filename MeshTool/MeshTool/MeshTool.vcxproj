@@ -157,6 +157,8 @@
     <ClInclude Include="Code\Utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\grid.frag" />
+    <None Include="Resources\Shaders\grid.vert" />
     <None Include="Resources\Shaders\test.frag" />
     <None Include="Resources\Shaders\test.vert" />
   </ItemGroup>

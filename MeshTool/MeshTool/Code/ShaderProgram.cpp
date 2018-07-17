@@ -193,8 +193,7 @@ void ShaderProgram::setUniform(const GLint &_location, const GLint &_value) cons
 
 void ShaderProgram::setUniform(const GLint &_location, GLuint _value) const
 {
-	// glUniform1ui
-	funcs->glUniform1i(_location, _value);
+	funcs->glUniform1ui(_location, _value);
 }
 
 void ShaderProgram::setUniform(const GLint &_location, const GLfloat &_value) const
