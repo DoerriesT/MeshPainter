@@ -206,7 +206,7 @@ void GLWidget::initializeGL()
 
 void GLWidget::paintGL()
 {
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), width / float(height), 0.01f, 100.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), width / float(height), 0.01f, 1000.0f);
 
 
 	funcs->glClearColor(0.0f, 1.0f * brightness, 0.0f, 1.0f);

@@ -17,8 +17,8 @@ void ArcBallCameraController::update(const glm::vec2 &_mouseDelta, float _scroll
 
 	if (_translateCenter)
 	{
-		center -= camera->getRightDirection() * _mouseDelta.x * MOUSE_DELTA_MULT * 0.1f;
-		center += camera->getUpDirection() * _mouseDelta.y * MOUSE_DELTA_MULT * 0.1f;
+		center -= camera->getRightDirection() * _mouseDelta.x * MOUSE_DELTA_MULT * 0.1f * distance;
+		center += camera->getUpDirection() * _mouseDelta.y * MOUSE_DELTA_MULT * 0.1f * distance;
 	}
 	else
 	{
