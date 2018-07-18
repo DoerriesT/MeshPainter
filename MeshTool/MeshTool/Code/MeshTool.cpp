@@ -1,5 +1,6 @@
 #include "MeshTool.h"
 #include "OBJLoader.h"
+#include <qfiledialog.h>
 
 MeshTool::MeshTool(QWidget *parent)
 	: QMainWindow(parent)
@@ -25,15 +26,15 @@ void MeshTool::on_actionToggleWireframe_toggled(bool _enabled)
 
 void MeshTool::on_actionOpen_triggered()
 {
-	static bool loaded = false;
+	QString fileName = QFileDialog::getOpenFileName(this,
+		tr("Open Mesh File"), "",
+		tr("Wavefront OBJ File (*.obj)"));
 
-	if (!loaded)
+	if (!fileName.isEmpty())
 	{
-		IndexedMesh indexedMesh = OBJLoader::loadOBJ("Resources/Models/teapot.obj");
+		IndexedMesh indexedMesh = OBJLoader::loadOBJ(fileName.toLatin1().data());
 
 		openGLWidget->setMesh(indexedMesh);
 		openGLWidget->update();
-
-		loaded = true;
 	}
 }

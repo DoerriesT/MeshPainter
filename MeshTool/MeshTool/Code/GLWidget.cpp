@@ -28,6 +28,10 @@ void GLWidget::setBrightness(float _brightness)
 void GLWidget::setMesh(const IndexedMesh &_mesh)
 {
 	makeCurrent();
+
+	// free this mesh before allocating storage for the new mesh
+	mesh.reset();
+
 	mesh = GLMesh::createMesh(_mesh);
 }
 
