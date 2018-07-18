@@ -122,14 +122,19 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 			for (unsigned int i = 1; i < lineParts.size(); ++i)
 			{
 				std::vector<std::string> faceParts = splitFaceString(lineParts[i]);// Utility::split(lineParts[i], "/");
-				assert(faceParts.size() == 3);
 
 				// skip this face if it has no position
 				// TODO: implement proper error handling
-				if (faceParts[0].empty())
+				if (faceParts.empty() || faceParts[0].empty())
 				{
 					assert(false);
 					continue;
+				}
+
+				// add empty records if none are present
+				while (faceParts.size() < 3)
+				{
+					faceParts.push_back("");
 				}
 
 				int posIndex = std::stoi(faceParts[0]);
