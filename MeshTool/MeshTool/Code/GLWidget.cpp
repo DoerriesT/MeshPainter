@@ -9,7 +9,8 @@ GLWidget::GLWidget(QWidget *parent)
 	: QOpenGLWidget(parent),
 	brightness(0.0f),
 	camera(new Camera()),
-	cameraController(camera, glm::vec3(0.0f), 1.0f)
+	cameraController(camera, glm::vec3(0.0f), 1.0f),
+	wireframe(false)
 {
 	setMouseTracking(true);
 }
@@ -28,6 +29,16 @@ void GLWidget::setMesh(const IndexedMesh &_mesh)
 {
 	makeCurrent();
 	mesh = GLMesh::createMesh(_mesh);
+}
+
+void GLWidget::toggleWireframe(bool _enabled)
+{
+	wireframe = _enabled;
+}
+
+void GLWidget::centerCamera()
+{
+	cameraController.centerCamera();
 }
 
 void GLWidget::initializeGL()
@@ -62,8 +73,8 @@ void GLWidget::initializeGL()
 		for (unsigned int i = 0; i < 11; ++i)
 		{
 			float xPos = (i - 5.0f);
-			gridVertices[i * 2] = { glm::vec3(xPos, 0.0f, -5.0f) * 0.1f, (i == 5) ? glm::vec3(0.0f, 1.0f, 0.0f) : glm::vec3(0.2) };
-			gridVertices[i * 2 + 1] = { glm::vec3(xPos, 0.0f, 5.0f) * 0.1f, (i == 5) ? glm::vec3(0.0f, 1.0f, 0.0f) : glm::vec3(0.2) };
+			gridVertices[i * 2] = { glm::vec3(xPos, 0.0f, -5.0f) * 0.1f, (i == 5) ? glm::vec3(0.0f, 0.0f, 1.0f) : glm::vec3(0.2) };
+			gridVertices[i * 2 + 1] = { glm::vec3(xPos, 0.0f, 5.0f) * 0.1f, (i == 5) ? glm::vec3(0.0f, 0.0f, 1.0f) : glm::vec3(0.2) };
 		}
 
 		for (unsigned int i = 0; i < 11; ++i)
@@ -216,10 +227,13 @@ void GLWidget::paintGL()
 		mesh->enableVertexAttribArrays();
 		uLineMode.set(false);
 		mesh->render();
-		//funcs->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		//uLineMode.set(true);
-		//mesh->render();
-		//funcs->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		if (wireframe)
+		{
+			funcs->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			uLineMode.set(true);
+			mesh->render();
+			funcs->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
 	}
 
 	// draw grid and axes

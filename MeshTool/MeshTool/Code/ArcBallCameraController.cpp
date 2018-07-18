@@ -12,7 +12,7 @@ void ArcBallCameraController::update(const glm::vec2 &_mouseDelta, float _scroll
 {
 	const float SCROLL_DELTA_MULT = -0.0005f;
 	const float MOUSE_DELTA_MULT = 0.01f;
-	distance += _scrollDelta * SCROLL_DELTA_MULT;
+	distance += _scrollDelta * SCROLL_DELTA_MULT * distance;
 	distance = glm::max(0.0f, distance);
 
 	if (_translateCenter)
@@ -27,4 +27,10 @@ void ArcBallCameraController::update(const glm::vec2 &_mouseDelta, float _scroll
 
 	camera->setPosition(center - camera->getForwardDirection() * distance);
 	camera->lookAt(center);
+}
+
+void ArcBallCameraController::centerCamera()
+{
+	center = glm::vec3(0.0f);
+	update(glm::vec2(0.0f), 0.0f, false);
 }

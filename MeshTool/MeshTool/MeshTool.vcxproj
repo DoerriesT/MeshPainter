@@ -115,9 +115,6 @@
     </QtRcc>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <QtUic Include="MeshTool.ui" />
-  </ItemGroup>
-  <ItemGroup>
     <QtRcc Include="MeshTool.qrc">
       <SubType>Designer</SubType>
     </QtRcc>
@@ -138,9 +135,6 @@
     <ClCompile Include="Code\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="Code\MeshTool.h" />
-  </ItemGroup>
-  <ItemGroup>
     <QtMoc Include="Code\GLWidget.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;.\Code</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;.\Code</IncludePath>
@@ -151,6 +145,10 @@
     <ClInclude Include="Code\Camera.h" />
     <ClInclude Include="Code\GLFunctions.h" />
     <ClInclude Include="Code\Mesh.h" />
+    <QtMoc Include="Code\MeshTool.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;.\Code</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;.\Code</IncludePath>
+    </QtMoc>
     <ClInclude Include="Code\OBJLoader.h" />
     <ClInclude Include="Code\ShaderProgram.h" />
     <ClInclude Include="Code\Uniform.h" />
@@ -161,6 +159,9 @@
     <None Include="Resources\Shaders\grid.vert" />
     <None Include="Resources\Shaders\test.frag" />
     <None Include="Resources\Shaders\test.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="Code\MeshTool.ui" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

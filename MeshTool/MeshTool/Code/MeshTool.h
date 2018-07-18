@@ -1,19 +1,18 @@
 #pragma once
 
-#include <QtWidgets/QWidget>
+#include <QMainWindow>
 #include "ui_MeshTool.h"
 
-class MeshTool : public QWidget
+class MeshTool : public QMainWindow, public Ui::MeshTool
 {
 	Q_OBJECT
 
 public:
 	MeshTool(QWidget *parent = Q_NULLPTR);
-
-private:
-	Ui::MeshToolClass ui;
+	~MeshTool();
 
 private slots:
-	void on_brightnessSlider_sliderMoved(int _val);
-	void on_pushButton_clicked();
+	void on_actionOpen_triggered();
+	void on_actionCenterCamera_triggered();
+	void on_actionToggleWireframe_toggled(bool _enabled);
 };

@@ -17,6 +17,8 @@ public:
 
 	void setBrightness(float _brightness);
 	void setMesh(const IndexedMesh &_mesh);
+	void toggleWireframe(bool _enabled);
+	void centerCamera();
 
 protected:
 	void initializeGL() override;
@@ -31,6 +33,7 @@ private:
 	float brightness;
 	int width;
 	int height;
+	bool wireframe;
 
 	std::shared_ptr<Camera> camera;
 	ArcBallCameraController cameraController;

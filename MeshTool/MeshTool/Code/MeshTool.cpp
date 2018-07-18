@@ -1,30 +1,38 @@
 #include "MeshTool.h"
-#include "Mesh.h"
 #include "OBJLoader.h"
 
 MeshTool::MeshTool(QWidget *parent)
-	: QWidget(parent)
+	: QMainWindow(parent)
 {
-	ui.setupUi(this);
+	setupUi(this);
 }
 
-void MeshTool::on_brightnessSlider_sliderMoved(int _val)
+MeshTool::~MeshTool()
 {
-	printf("%d\n", _val);
-	ui.openGLWidget->setBrightness(_val / 100.0f);
-	ui.openGLWidget->update();
 }
 
-void MeshTool::on_pushButton_clicked()
+void MeshTool::on_actionCenterCamera_triggered()
+{
+	openGLWidget->centerCamera();
+	openGLWidget->update();
+}
+
+void MeshTool::on_actionToggleWireframe_toggled(bool _enabled)
+{
+	openGLWidget->toggleWireframe(_enabled);
+	openGLWidget->update();
+}
+
+void MeshTool::on_actionOpen_triggered()
 {
 	static bool loaded = false;
 
 	if (!loaded)
 	{
-		IndexedMesh indexedMesh = OBJLoader::loadOBJ("Resources/Models/dragon.obj");
+		IndexedMesh indexedMesh = OBJLoader::loadOBJ("Resources/Models/teapot.obj");
 
-		ui.openGLWidget->setMesh(indexedMesh);
-		ui.openGLWidget->update();
+		openGLWidget->setMesh(indexedMesh);
+		openGLWidget->update();
 
 		loaded = true;
 	}

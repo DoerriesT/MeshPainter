@@ -31,11 +31,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="MeshTool.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-  </ItemGroup>
-  <ItemGroup>
     <QtRcc Include="MeshTool.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
@@ -45,9 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\main.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\MeshTool.cpp">
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="Code\GLWidget.cpp">
@@ -74,12 +66,15 @@
     <ClCompile Include="Code\ArcBallCameraController.cpp">
       <Filter>Code</Filter>
     </ClCompile>
+    <ClCompile Include="Code\MeshTool.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="Code\MeshTool.h">
+    <QtMoc Include="Code\GLWidget.h">
       <Filter>Code</Filter>
     </QtMoc>
-    <QtMoc Include="Code\GLWidget.h">
+    <QtMoc Include="Code\MeshTool.h">
       <Filter>Code</Filter>
     </QtMoc>
   </ItemGroup>
@@ -122,5 +117,10 @@
     <None Include="Resources\Shaders\grid.vert">
       <Filter>Resources\Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="Code\MeshTool.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
 </Project>

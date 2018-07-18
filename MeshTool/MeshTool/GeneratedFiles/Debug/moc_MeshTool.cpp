@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MeshTool_t {
-    QByteArrayData data[5];
-    char stringdata0[69];
+    QByteArrayData data[6];
+    char stringdata0[108];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -32,14 +32,17 @@ struct qt_meta_stringdata_MeshTool_t {
 static const qt_meta_stringdata_MeshTool_t qt_meta_stringdata_MeshTool = {
     {
 QT_MOC_LITERAL(0, 0, 8), // "MeshTool"
-QT_MOC_LITERAL(1, 9, 31), // "on_brightnessSlider_sliderMoved"
-QT_MOC_LITERAL(2, 41, 0), // ""
-QT_MOC_LITERAL(3, 42, 4), // "_val"
-QT_MOC_LITERAL(4, 47, 21) // "on_pushButton_clicked"
+QT_MOC_LITERAL(1, 9, 23), // "on_actionOpen_triggered"
+QT_MOC_LITERAL(2, 33, 0), // ""
+QT_MOC_LITERAL(3, 34, 31), // "on_actionCenterCamera_triggered"
+QT_MOC_LITERAL(4, 66, 32), // "on_actionToggleWireframe_toggled"
+QT_MOC_LITERAL(5, 99, 8) // "_enabled"
 
     },
-    "MeshTool\0on_brightnessSlider_sliderMoved\0"
-    "\0_val\0on_pushButton_clicked"
+    "MeshTool\0on_actionOpen_triggered\0\0"
+    "on_actionCenterCamera_triggered\0"
+    "on_actionToggleWireframe_toggled\0"
+    "_enabled"
 };
 #undef QT_MOC_LITERAL
 
@@ -49,7 +52,7 @@ static const uint qt_meta_data_MeshTool[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -57,12 +60,14 @@ static const uint qt_meta_data_MeshTool[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,   24,    2, 0x08 /* Private */,
-       4,    0,   27,    2, 0x08 /* Private */,
+       1,    0,   29,    2, 0x08 /* Private */,
+       3,    0,   30,    2, 0x08 /* Private */,
+       4,    1,   31,    2, 0x08 /* Private */,
 
  // slots: parameters
-    QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Bool,    5,
 
        0        // eod
 };
@@ -73,15 +78,16 @@ void MeshTool::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
         MeshTool *_t = static_cast<MeshTool *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->on_brightnessSlider_sliderMoved((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 1: _t->on_pushButton_clicked(); break;
+        case 0: _t->on_actionOpen_triggered(); break;
+        case 1: _t->on_actionCenterCamera_triggered(); break;
+        case 2: _t->on_actionToggleWireframe_toggled((*reinterpret_cast< bool(*)>(_a[1]))); break;
         default: ;
         }
     }
 }
 
 QT_INIT_METAOBJECT const QMetaObject MeshTool::staticMetaObject = {
-    { &QWidget::staticMetaObject, qt_meta_stringdata_MeshTool.data,
+    { &QMainWindow::staticMetaObject, qt_meta_stringdata_MeshTool.data,
       qt_meta_data_MeshTool,  qt_static_metacall, nullptr, nullptr}
 };
 
@@ -96,22 +102,24 @@ void *MeshTool::qt_metacast(const char *_clname)
     if (!_clname) return nullptr;
     if (!strcmp(_clname, qt_meta_stringdata_MeshTool.stringdata0))
         return static_cast<void*>(this);
-    return QWidget::qt_metacast(_clname);
+    if (!strcmp(_clname, "Ui::MeshTool"))
+        return static_cast< Ui::MeshTool*>(this);
+    return QMainWindow::qt_metacast(_clname);
 }
 
 int MeshTool::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QWidget::qt_metacall(_c, _id, _a);
+    _id = QMainWindow::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 3;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 2)
+        if (_id < 3)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 2;
+        _id -= 3;
     }
     return _id;
 }

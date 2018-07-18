@@ -10,71 +10,88 @@
 #define UI_MESHTOOL_H
 
 #include <QtCore/QVariant>
+#include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGridLayout>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QSlider>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMenuBar>
 #include <QtWidgets/QWidget>
 #include "glwidget.h"
 
 QT_BEGIN_NAMESPACE
 
-class Ui_MeshToolClass
+class Ui_MeshTool
 {
 public:
+    QAction *actionOpen;
+    QAction *actionToggleWireframe;
+    QAction *actionCenterCamera;
+    QWidget *centralWidget;
     QGridLayout *gridLayout;
-    QSlider *brightnessSlider;
     GLWidget *openGLWidget;
-    QPushButton *pushButton;
+    QMenuBar *menuBar;
+    QMenu *menuFile;
+    QMenu *menuView;
 
-    void setupUi(QWidget *MeshToolClass)
+    void setupUi(QMainWindow *MeshTool)
     {
-        if (MeshToolClass->objectName().isEmpty())
-            MeshToolClass->setObjectName(QStringLiteral("MeshToolClass"));
-        MeshToolClass->resize(942, 702);
-        gridLayout = new QGridLayout(MeshToolClass);
+        if (MeshTool->objectName().isEmpty())
+            MeshTool->setObjectName(QStringLiteral("MeshTool"));
+        MeshTool->resize(825, 604);
+        actionOpen = new QAction(MeshTool);
+        actionOpen->setObjectName(QStringLiteral("actionOpen"));
+        actionToggleWireframe = new QAction(MeshTool);
+        actionToggleWireframe->setObjectName(QStringLiteral("actionToggleWireframe"));
+        actionToggleWireframe->setCheckable(true);
+        actionCenterCamera = new QAction(MeshTool);
+        actionCenterCamera->setObjectName(QStringLiteral("actionCenterCamera"));
+        centralWidget = new QWidget(MeshTool);
+        centralWidget->setObjectName(QStringLiteral("centralWidget"));
+        gridLayout = new QGridLayout(centralWidget);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
-        brightnessSlider = new QSlider(MeshToolClass);
-        brightnessSlider->setObjectName(QStringLiteral("brightnessSlider"));
-        brightnessSlider->setMaximum(100);
-        brightnessSlider->setOrientation(Qt::Vertical);
-        brightnessSlider->setInvertedAppearance(false);
-
-        gridLayout->addWidget(brightnessSlider, 0, 0, 1, 1);
-
-        openGLWidget = new GLWidget(MeshToolClass);
+        openGLWidget = new GLWidget(centralWidget);
         openGLWidget->setObjectName(QStringLiteral("openGLWidget"));
-        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(openGLWidget->sizePolicy().hasHeightForWidth());
-        openGLWidget->setSizePolicy(sizePolicy);
 
-        gridLayout->addWidget(openGLWidget, 0, 1, 2, 1);
+        gridLayout->addWidget(openGLWidget, 0, 0, 1, 1);
 
-        pushButton = new QPushButton(MeshToolClass);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
+        MeshTool->setCentralWidget(centralWidget);
+        menuBar = new QMenuBar(MeshTool);
+        menuBar->setObjectName(QStringLiteral("menuBar"));
+        menuBar->setGeometry(QRect(0, 0, 825, 21));
+        menuFile = new QMenu(menuBar);
+        menuFile->setObjectName(QStringLiteral("menuFile"));
+        menuView = new QMenu(menuBar);
+        menuView->setObjectName(QStringLiteral("menuView"));
+        MeshTool->setMenuBar(menuBar);
 
-        gridLayout->addWidget(pushButton, 1, 0, 1, 1);
+        menuBar->addAction(menuFile->menuAction());
+        menuBar->addAction(menuView->menuAction());
+        menuFile->addAction(actionOpen);
+        menuView->addAction(actionToggleWireframe);
+        menuView->addAction(actionCenterCamera);
 
+        retranslateUi(MeshTool);
 
-        retranslateUi(MeshToolClass);
-
-        QMetaObject::connectSlotsByName(MeshToolClass);
+        QMetaObject::connectSlotsByName(MeshTool);
     } // setupUi
 
-    void retranslateUi(QWidget *MeshToolClass)
+    void retranslateUi(QMainWindow *MeshTool)
     {
-        MeshToolClass->setWindowTitle(QApplication::translate("MeshToolClass", "MeshTool", nullptr));
-        pushButton->setText(QApplication::translate("MeshToolClass", "Load Model", nullptr));
+        MeshTool->setWindowTitle(QApplication::translate("MeshTool", "MeshTool", nullptr));
+        actionOpen->setText(QApplication::translate("MeshTool", "Open", nullptr));
+        actionToggleWireframe->setText(QApplication::translate("MeshTool", "Toggle Wireframe", nullptr));
+        actionCenterCamera->setText(QApplication::translate("MeshTool", "Center Camera", nullptr));
+        menuFile->setTitle(QApplication::translate("MeshTool", "File", nullptr));
+        menuView->setTitle(QApplication::translate("MeshTool", "View", nullptr));
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class MeshToolClass: public Ui_MeshToolClass {};
+    class MeshTool: public Ui_MeshTool {};
 } // namespace Ui
 
 QT_END_NAMESPACE
