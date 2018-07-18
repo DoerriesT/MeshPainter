@@ -1,7 +1,7 @@
 #pragma once
-
 #include <QMainWindow>
 #include "ui_MeshTool.h"
+#include <mutex>
 
 class MeshTool : public QMainWindow, public Ui::MeshTool
 {
@@ -10,6 +10,10 @@ class MeshTool : public QMainWindow, public Ui::MeshTool
 public:
 	MeshTool(QWidget *parent = Q_NULLPTR);
 	~MeshTool();
+
+private:
+	std::mutex loadingMeshMutex;
+	bool loadingMesh;
 
 private slots:
 	void on_actionOpen_triggered();
