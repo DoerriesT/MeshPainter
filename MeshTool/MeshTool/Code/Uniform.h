@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "ShaderProgram.h"
+#include "Material.h"
 
 template<typename Type>
 class Uniform
@@ -52,3 +53,23 @@ inline bool Uniform<Type>::isValid()
 {
 	return location != -1;
 }
+
+class UniformMaterial
+{
+public:
+	UniformMaterial(const std::string &_name);
+	void create(const std::shared_ptr<ShaderProgram> &_shaderProgram);
+	void set(const Material *_value);
+	bool isValid();
+
+private:
+	std::shared_ptr<ShaderProgram> shaderProgram;
+	Uniform<glm::vec4> albedo;
+	Uniform<GLfloat> metallic;
+	Uniform<GLfloat> roughness;
+	Uniform<glm::vec3> emissive;
+	Uniform<GLint> mapBitField;
+	Uniform<GLboolean> displacement;
+	std::string name;
+	bool firstTime;
+};

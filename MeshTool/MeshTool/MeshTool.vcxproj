@@ -128,10 +128,15 @@
     <ClCompile Include="Code\GLFunctions.cpp" />
     <ClCompile Include="Code\GLWidget.cpp" />
     <ClCompile Include="Code\main.cpp" />
+    <ClCompile Include="Code\Material.cpp" />
     <ClCompile Include="Code\Mesh.cpp" />
     <ClCompile Include="Code\MeshTool.cpp" />
     <ClCompile Include="Code\OBJLoader.cpp" />
     <ClCompile Include="Code\ShaderProgram.cpp" />
+    <ClCompile Include="Code\stb_image.cpp" />
+    <ClCompile Include="Code\stb_image_resize.cpp" />
+    <ClCompile Include="Code\Texture.cpp" />
+    <ClCompile Include="Code\Uniform.cpp" />
     <ClCompile Include="Code\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +149,7 @@
     <ClInclude Include="Code\ArcBallCameraController.h" />
     <ClInclude Include="Code\Camera.h" />
     <ClInclude Include="Code\GLFunctions.h" />
+    <ClInclude Include="Code\Material.h" />
     <ClInclude Include="Code\Mesh.h" />
     <QtMoc Include="Code\MeshTool.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;.\Code</IncludePath>
@@ -151,6 +157,7 @@
     </QtMoc>
     <ClInclude Include="Code\OBJLoader.h" />
     <ClInclude Include="Code\ShaderProgram.h" />
+    <ClInclude Include="Code\Texture.h" />
     <ClInclude Include="Code\Uniform.h" />
     <ClInclude Include="Code\Utility.h" />
   </ItemGroup>

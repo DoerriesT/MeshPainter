@@ -69,6 +69,21 @@
     <ClCompile Include="Code\MeshTool.cpp">
       <Filter>Code</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Material.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Texture.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Uniform.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\stb_image.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\stb_image_resize.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Code\GLWidget.h">
@@ -101,6 +116,12 @@
       <Filter>Code</Filter>
     </ClInclude>
     <ClInclude Include="Code\ArcBallCameraController.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Material.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Texture.h">
       <Filter>Code</Filter>
     </ClInclude>
   </ItemGroup>

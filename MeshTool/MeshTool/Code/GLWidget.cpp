@@ -4,10 +4,10 @@
 #include <cassert>
 #include "Utility.h"
 #include <QMouseEvent>
+#include "Texture.h"
 
 GLWidget::GLWidget(QWidget *parent)
 	: QOpenGLWidget(parent),
-	brightness(0.0f),
 	camera(new Camera()),
 	cameraController(camera, glm::vec3(0.0f), 1.0f),
 	wireframe(false)
@@ -17,12 +17,9 @@ GLWidget::GLWidget(QWidget *parent)
 
 GLWidget::~GLWidget()
 {
+	// member data destructors have gl objects, so make the context current
 	makeCurrent();
-}
-
-void GLWidget::setBrightness(float _brightness)
-{
-	brightness = _brightness;
+	delete material;
 }
 
 void GLWidget::setMesh(const IndexedMesh &_mesh)
@@ -40,6 +37,11 @@ void GLWidget::toggleWireframe(bool _enabled)
 	wireframe = _enabled;
 }
 
+void GLWidget::toggleRenderMode(bool _renderMode)
+{
+	renderMode = _renderMode;
+}
+
 void GLWidget::centerCamera()
 {
 	cameraController.centerCamera();
@@ -48,6 +50,9 @@ void GLWidget::centerCamera()
 void GLWidget::initializeGL()
 {
 	funcs = getGLFunctions();
+
+	funcs->glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
 	funcs->glEnable(GL_DEPTH_TEST);
 	funcs->glDepthFunc(GL_LEQUAL);
 
@@ -193,50 +198,122 @@ void GLWidget::initializeGL()
 
 	testShader = ShaderProgram::createShaderProgram("Resources/Shaders/test.vert", "Resources/Shaders/test.frag");
 	gridShader = ShaderProgram::createShaderProgram("Resources/Shaders/grid.vert", "Resources/Shaders/grid.frag");
+	uvShader = ShaderProgram::createShaderProgram("Resources/Shaders/uvView.vert", "Resources/Shaders/uvView.frag");
+	renderShader = ShaderProgram::createShaderProgram("Resources/Shaders/render.vert", "Resources/Shaders/render.frag");
 
 	uModelViewProjection.create(testShader);
 	uModel.create(testShader);
 	uCamPos.create(testShader);
 	uLineMode.create(testShader);
+	uLightDir.create(testShader);
 
 	uModelViewProjectionG.create(gridShader);
 
+	uModelViewProjectionMatrixR.create(renderShader);
+	uModelMatrixR.create(renderShader);
+	uAtlasDataR.create(renderShader);
+	uMaterialR.create(renderShader);
+	uLightColorR.create(renderShader);
+	uLightDirectionR.create(renderShader);
+	uCamPosR.create(renderShader);
+
+	//funcs->glGenFramebuffers(1, &fbo);
+
+	//funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	//funcs->glGenTextures(1, &colorTexture);
+	//funcs->glBindTexture(GL_TEXTURE_2D, colorTexture);
+	//funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	//funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	//funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture, 0);
+
+	//funcs->glGenTextures(1, &idTexture);
+	//funcs->glBindTexture(GL_TEXTURE_2D, idTexture);
+	//funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+	//funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	//funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, idTexture, 0);
+
+	//funcs->glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	cameraController.update(glm::vec2(0.0f), 0.0f, false);
+
+	material = new Material(glm::vec4(0.0, 0.0, 0.0, 1.0));
+
+	irradianceTexture = Texture::createTexture("Resources/Textures/irradiance.dds");
+	reflectanceTexture = Texture::createTexture("Resources/Textures/reflectance.dds");
+	brdfLUT = Texture::createTexture("Resources/Textures/brdf.dds");
+
+	funcs->glActiveTexture(GL_TEXTURE7);
+	funcs->glBindTexture(irradianceTexture->getTarget(), irradianceTexture->getId());
+	funcs->glActiveTexture(GL_TEXTURE8);
+	funcs->glBindTexture(reflectanceTexture->getTarget(), reflectanceTexture->getId());
+	funcs->glActiveTexture(GL_TEXTURE9);
+	funcs->glBindTexture(GL_TEXTURE_2D, brdfLUT->getId());
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
 }
 
 void GLWidget::paintGL()
 {
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), width / float(height), 0.01f, 1000.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), width / float(height), 0.01f, 10000.0f);
 
 
-	funcs->glClearColor(0.0f, 1.0f * brightness, 0.0f, 1.0f);
+	funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	funcs->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	if (mesh)
 	{
-		static auto startTime = std::chrono::high_resolution_clock::now();
-
-		auto currentTime = std::chrono::high_resolution_clock::now();
-		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-		glm::mat4 model = glm::rotate(glm::mat4(1.0f), time * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-
-		testShader->bind();
-
-		uModelViewProjection.set(projection * camera->getViewMatrix());
-		uModel.set(glm::mat4());
-		uCamPos.set(camera->getPosition());
-
-		mesh->enableVertexAttribArrays();
-		uLineMode.set(false);
-		mesh->render();
-		if (wireframe)
+		if (renderMode)
 		{
-			funcs->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			uLineMode.set(true);
+			renderShader->bind();
+
+			uModelViewProjectionMatrixR.set(projection * camera->getViewMatrix());
+			uModelMatrixR.set(glm::mat4());
+			uAtlasDataR.set(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
+			uMaterialR.set(material);
+			uLightColorR.set(glm::vec3(1.0f));
+			uLightDirectionR.set(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
+			uCamPosR.set(camera->getPosition());
+
+			material->bindTextures();
+
+			funcs->glActiveTexture(GL_TEXTURE7);
+			funcs->glBindTexture(irradianceTexture->getTarget(), irradianceTexture->getId());
+			funcs->glActiveTexture(GL_TEXTURE8);
+			funcs->glBindTexture(reflectanceTexture->getTarget(), reflectanceTexture->getId());
+			funcs->glActiveTexture(GL_TEXTURE9);
+			funcs->glBindTexture(GL_TEXTURE_2D, brdfLUT->getId());
+
+			mesh->enableVertexAttribArrays();
 			mesh->render();
-			funcs->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+		else
+		{
+			testShader->bind();
+			
+			uModelViewProjection.set(projection * camera->getViewMatrix());
+			uModel.set(glm::mat4());
+			uCamPos.set(camera->getPosition());
+			uLightDir.set(-camera->getForwardDirection());
+			
+			mesh->enableVertexAttribArrays();
+			uLineMode.set(false);
+			mesh->render();
+
+			if (wireframe)
+			{
+				funcs->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				uLineMode.set(true);
+				mesh->render();
+				funcs->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
 		}
 	}
 

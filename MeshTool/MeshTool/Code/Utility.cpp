@@ -49,6 +49,11 @@ std::vector<std::string> Utility::split(const std::string & str, const std::stri
 	return output;
 }
 
+std::string Utility::getPathFileExtension(const std::string & filePath)
+{
+	return split(filePath, ".").back();
+}
+
 void Utility::glErrorCheck()
 {
 	switch (getGLFunctions()->glGetError())

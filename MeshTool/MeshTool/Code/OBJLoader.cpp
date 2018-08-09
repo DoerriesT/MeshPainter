@@ -92,7 +92,7 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 			// we only support one sub-mesh/object per file
 			if (objectFound)
 			{
-				break;
+				//break;
 			}
 			objectFound = true;
 		}

@@ -10,6 +10,7 @@ in vec3 vNormal;
 
 const vec3 LIGHT_DIR = normalize(vec3(1.0, 1.0, 1.0));
 
+uniform vec3 uLightDir;
 uniform vec3 uCamPos;
 uniform bool uLineMode;
 
@@ -22,7 +23,7 @@ void main()
 	else
 	{
 		vec3 diffuse = vec3(1.0);
-		vec3 L = LIGHT_DIR;
+		vec3 L = uLightDir;
 		vec3 V = normalize(uCamPos - vWorldPos);
 		vec3 H = normalize(V + L);
 		vec3 N = normalize(vNormal);

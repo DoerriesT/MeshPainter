@@ -58,10 +58,6 @@ GLMesh::GLMesh(const IndexedMesh &_indexedMesh)
 	// vertex texture coord
 	funcs->glEnableVertexAttribArray(2);
 	funcs->glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoord));
-	
-	//// vertex tangent
-	//funcs->glEnableVertexAttribArray(3);
-	//funcs->glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
 
 	funcs->glBindVertexArray(0);
 
