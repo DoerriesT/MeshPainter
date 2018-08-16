@@ -84,6 +84,9 @@
     <ClCompile Include="Code\stb_image_resize.cpp">
       <Filter>Code</Filter>
     </ClCompile>
+    <ClCompile Include="Code\HalfEdgeMesh.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Code\GLWidget.h">
@@ -124,18 +127,33 @@
     <ClInclude Include="Code\Texture.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="Code\HalfEdgeMesh.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\test.frag">
-      <Filter>Resources\Shaders</Filter>
-    </None>
-    <None Include="Resources\Shaders\test.vert">
-      <Filter>Resources\Shaders</Filter>
-    </None>
     <None Include="Resources\Shaders\grid.frag">
       <Filter>Resources\Shaders</Filter>
     </None>
     <None Include="Resources\Shaders\grid.vert">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\render.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\render.vert">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\uvView.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\uvView.vert">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\default.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\default.vert">
       <Filter>Resources\Shaders</Filter>
     </None>
   </ItemGroup>

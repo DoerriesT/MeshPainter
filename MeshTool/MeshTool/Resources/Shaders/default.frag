@@ -3,6 +3,7 @@
 const float PI = 3.14159265359;
 
 layout(location = 0) out vec4 oFragColor;
+layout(location = 1) out vec4 oUv;
 
 in vec2 vTexCoord;
 in vec3 vWorldPos;
@@ -19,6 +20,7 @@ void main()
 	if (uLineMode)
 	{
 		oFragColor = vec4(0.0, 1.0, 0.0, 1.0);
+		oUv = vec4(0.0, 0.0, 0.0, 1.0);
 	}
 	else
 	{
@@ -32,5 +34,6 @@ void main()
 		float specular = pow(NdotH, 128.0);
 		vec3 color =  vec3(0.1) + NdotL * diffuse + specular * vec3(1.0);
 		oFragColor = vec4(color, 1.0);
+		oUv = vec4(vTexCoord, 1.0, 1.0);
 	}
 }

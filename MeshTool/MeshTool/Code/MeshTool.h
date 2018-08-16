@@ -14,12 +14,15 @@ public:
 private:
 	std::mutex loadingMeshMutex;
 	bool loadingMesh;
+	QActionGroup *viewModeGroup;
 
 private slots:
 	void on_actionOpen_triggered();
 	void on_actionCenterCamera_triggered();
 	void on_actionToggleWireframe_toggled(bool _enabled);
-	void on_actionToggleRenderMode_toggled(bool _enabled);
+	void on_actionDefaultView_toggled(bool _enabled);
+	void on_actionRenderView_toggled(bool _enabled);
+	void on_actionUvView_toggled(bool _enabled);
 	void on_albedoRedSpinBox_valueChanged(double _value);
 	void on_albedoGreenSpinBox_valueChanged(double _value);
 	void on_albedoBlueSpinBox_valueChanged(double _value);

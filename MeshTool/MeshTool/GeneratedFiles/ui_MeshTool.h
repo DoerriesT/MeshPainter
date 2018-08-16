@@ -33,8 +33,11 @@ public:
     QAction *actionOpen;
     QAction *actionToggleWireframe;
     QAction *actionCenterCamera;
-    QAction *actionToggleRenderMode;
+    QAction *actionRenderView;
     QAction *actionToggleCameraMode;
+    QAction *actionUvView;
+    QAction *action3dView;
+    QAction *actionDefaultView;
     QWidget *centralWidget;
     QVBoxLayout *verticalLayout;
     GLWidget *openGLWidget;
@@ -97,12 +100,22 @@ public:
         actionToggleWireframe->setCheckable(true);
         actionCenterCamera = new QAction(MeshTool);
         actionCenterCamera->setObjectName(QStringLiteral("actionCenterCamera"));
-        actionToggleRenderMode = new QAction(MeshTool);
-        actionToggleRenderMode->setObjectName(QStringLiteral("actionToggleRenderMode"));
-        actionToggleRenderMode->setCheckable(true);
+        actionRenderView = new QAction(MeshTool);
+        actionRenderView->setObjectName(QStringLiteral("actionRenderView"));
+        actionRenderView->setCheckable(true);
         actionToggleCameraMode = new QAction(MeshTool);
         actionToggleCameraMode->setObjectName(QStringLiteral("actionToggleCameraMode"));
         actionToggleCameraMode->setCheckable(true);
+        actionUvView = new QAction(MeshTool);
+        actionUvView->setObjectName(QStringLiteral("actionUvView"));
+        actionUvView->setCheckable(true);
+        action3dView = new QAction(MeshTool);
+        action3dView->setObjectName(QStringLiteral("action3dView"));
+        action3dView->setCheckable(true);
+        actionDefaultView = new QAction(MeshTool);
+        actionDefaultView->setObjectName(QStringLiteral("actionDefaultView"));
+        actionDefaultView->setCheckable(true);
+        actionDefaultView->setChecked(true);
         centralWidget = new QWidget(MeshTool);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         verticalLayout = new QVBoxLayout(centralWidget);
@@ -376,9 +389,12 @@ public:
         menuBar->addAction(menuFile->menuAction());
         menuBar->addAction(menuView->menuAction());
         menuFile->addAction(actionOpen);
-        menuView->addAction(actionToggleWireframe);
-        menuView->addAction(actionToggleRenderMode);
         menuView->addAction(actionCenterCamera);
+        menuView->addAction(actionToggleWireframe);
+        menuView->addSeparator();
+        menuView->addAction(actionDefaultView);
+        menuView->addAction(actionRenderView);
+        menuView->addAction(actionUvView);
 
         retranslateUi(MeshTool);
 
@@ -391,8 +407,11 @@ public:
         actionOpen->setText(QApplication::translate("MeshTool", "Open", nullptr));
         actionToggleWireframe->setText(QApplication::translate("MeshTool", "Toggle Wireframe", nullptr));
         actionCenterCamera->setText(QApplication::translate("MeshTool", "Center Camera", nullptr));
-        actionToggleRenderMode->setText(QApplication::translate("MeshTool", "Toggle Render Mode", nullptr));
+        actionRenderView->setText(QApplication::translate("MeshTool", "Render View", nullptr));
         actionToggleCameraMode->setText(QApplication::translate("MeshTool", "Toggle Camera Mode", nullptr));
+        actionUvView->setText(QApplication::translate("MeshTool", "UV View", nullptr));
+        action3dView->setText(QApplication::translate("MeshTool", "3D View", nullptr));
+        actionDefaultView->setText(QApplication::translate("MeshTool", "Default View", nullptr));
         label_8->setText(QApplication::translate("MeshTool", "Albedo", nullptr));
         label_10->setText(QApplication::translate("MeshTool", "Metallic", nullptr));
         label_11->setText(QApplication::translate("MeshTool", "Roughness", nullptr));

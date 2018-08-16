@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cassert>
 #include <map>
+#include <set>
 #include <sstream>
 #include "Utility.h"
 
@@ -226,6 +227,12 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 	}
 
 	assert(currentIndex == vertices.size());
+
+#ifdef _DEBUG
+	std::set<uint32_t> indexSet(indices.begin(), indices.end());
+	assert(indexSet.size() == vertices.size());
+#endif // _DEBUG
+
 
 	return { vertices, indices };
 }

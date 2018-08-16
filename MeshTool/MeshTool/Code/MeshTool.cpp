@@ -4,12 +4,17 @@
 #include <thread>
 #include <qtimer.h>
 #include "Texture.h"
+#include "HalfEdgeMesh.h"
 
 MeshTool::MeshTool(QWidget *parent)
 	: QMainWindow(parent),
 	loadingMesh(false)
 {
 	setupUi(this);
+	viewModeGroup = new QActionGroup(this);
+	viewModeGroup->addAction(actionDefaultView);
+	viewModeGroup->addAction(actionRenderView);
+	viewModeGroup->addAction(actionUvView);
 }
 
 MeshTool::~MeshTool()
@@ -28,10 +33,31 @@ void MeshTool::on_actionToggleWireframe_toggled(bool _enabled)
 	openGLWidget->update();
 }
 
-void MeshTool::on_actionToggleRenderMode_toggled(bool _enabled)
+void MeshTool::on_actionDefaultView_toggled(bool _enabled)
 {
-	openGLWidget->toggleRenderMode(_enabled);
-	openGLWidget->update();
+	if (_enabled)
+	{
+		openGLWidget->setViewMode(ViewMode::DEFAULT);
+		openGLWidget->update();
+	}
+}
+
+void MeshTool::on_actionRenderView_toggled(bool _enabled)
+{
+	if (_enabled)
+	{
+		openGLWidget->setViewMode(ViewMode::RENDER);
+		openGLWidget->update();
+	}
+}
+
+void MeshTool::on_actionUvView_toggled(bool _enabled)
+{
+	if (_enabled)
+	{
+		openGLWidget->setViewMode(ViewMode::UV);
+		openGLWidget->update();
+	}
 }
 
 void MeshTool::on_albedoRedSpinBox_valueChanged(double _value)

@@ -127,6 +127,7 @@
     <ClCompile Include="Code\Camera.cpp" />
     <ClCompile Include="Code\GLFunctions.cpp" />
     <ClCompile Include="Code\GLWidget.cpp" />
+    <ClCompile Include="Code\HalfEdgeMesh.cpp" />
     <ClCompile Include="Code\main.cpp" />
     <ClCompile Include="Code\Material.cpp" />
     <ClCompile Include="Code\Mesh.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="Code\ArcBallCameraController.h" />
     <ClInclude Include="Code\Camera.h" />
     <ClInclude Include="Code\GLFunctions.h" />
+    <ClInclude Include="Code\HalfEdgeMesh.h" />
     <ClInclude Include="Code\Material.h" />
     <ClInclude Include="Code\Mesh.h" />
     <QtMoc Include="Code\MeshTool.h">
@@ -164,8 +166,12 @@
   <ItemGroup>
     <None Include="Resources\Shaders\grid.frag" />
     <None Include="Resources\Shaders\grid.vert" />
-    <None Include="Resources\Shaders\test.frag" />
-    <None Include="Resources\Shaders\test.vert" />
+    <None Include="Resources\Shaders\render.frag" />
+    <None Include="Resources\Shaders\render.vert" />
+    <None Include="Resources\Shaders\default.frag" />
+    <None Include="Resources\Shaders\default.vert" />
+    <None Include="Resources\Shaders\uvView.frag" />
+    <None Include="Resources\Shaders\uvView.vert" />
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="Code\MeshTool.ui" />

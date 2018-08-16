@@ -32,7 +32,7 @@ void UniformMaterial::set(const Material *_value)
 	metallic.set(_value->getMetallic());
 	roughness.set(_value->getRoughness());
 	emissive.set(_value->getEmissive());
-	mapBitField.set(_value->getMapBitField());
+	mapBitField.set(_value->getMapBitField() | Material::ALBEDO);
 	std::shared_ptr<Texture> displacementMap = _value->getDisplacementMap();
 	displacement.set(displacementMap && disp);
 }
