@@ -15,27 +15,21 @@ private:
 	std::mutex loadingMeshMutex;
 	bool loadingMesh;
 	QActionGroup *viewModeGroup;
+	QActionGroup *textureModeGroup;
+	QAbstractItemModel *materialItemModel;
 
 private slots:
 	void on_actionOpen_triggered();
 	void on_actionCenterCamera_triggered();
 	void on_actionToggleWireframe_toggled(bool _enabled);
 	void on_actionDefaultView_toggled(bool _enabled);
+	void on_actionTextureView_toggled(bool _enabled);
 	void on_actionRenderView_toggled(bool _enabled);
 	void on_actionUvView_toggled(bool _enabled);
-	void on_albedoRedSpinBox_valueChanged(double _value);
-	void on_albedoGreenSpinBox_valueChanged(double _value);
-	void on_albedoBlueSpinBox_valueChanged(double _value);
-	void on_metallicSpinBox_valueChanged(double _value);
-	void on_roughnessSpinBox_valueChanged(double _value);
-	void on_emissiveRedSpinBox_valueChanged(double _value);
-	void on_emissiveGreenSpinBox_valueChanged(double _value);
-	void on_emissiveBlueSpinBox_valueChanged(double _value);
-	void on_albedoTextureButton_clicked();
-	void on_normalTextureButton_clicked();
-	void on_metallicTextureButton_clicked();
-	void on_roughnessTextureButton_clicked();
-	void on_aoTextureButton_clicked();
-	void on_emissiveTextureButton_clicked();
-	void on_displacementTextureButton_clicked();
+	void on_actionAlbedoTexture_toggled(bool _enabled);
+	void on_actionMetallicTexture_toggled(bool _enabled);
+	void on_actionRoughnessTexture_toggled(bool _enabled);
+	void on_actionAmbientOcclusionTexture_toggled(bool _enabled);
+	void on_actionEmissiveTexture_toggled(bool _enabled);
+	void on_actionDisplacementTexture_toggled(bool _enabled);
 };

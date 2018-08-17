@@ -3,6 +3,7 @@
 #include <qfiledialog.h>
 #include <thread>
 #include <qtimer.h>
+#include <QStandardItemModel>
 #include "Texture.h"
 #include "HalfEdgeMesh.h"
 
@@ -13,8 +14,27 @@ MeshTool::MeshTool(QWidget *parent)
 	setupUi(this);
 	viewModeGroup = new QActionGroup(this);
 	viewModeGroup->addAction(actionDefaultView);
+	viewModeGroup->addAction(actionTextureView);
 	viewModeGroup->addAction(actionRenderView);
 	viewModeGroup->addAction(actionUvView);
+
+	textureModeGroup = new QActionGroup(this);
+	textureModeGroup->addAction(actionAlbedoTexture);
+	textureModeGroup->addAction(actionMetallicTexture);
+	textureModeGroup->addAction(actionRoughnessTexture);
+	textureModeGroup->addAction(actionAmbientOcclusionTexture);
+	textureModeGroup->addAction(actionEmissiveTexture);
+	textureModeGroup->addAction(actionDisplacementTexture);
+
+	materialItemModel = new QStandardItemModel();
+	QStandardItem *parentItem = ((QStandardItemModel *)materialItemModel)->invisibleRootItem();
+	for (int i = 0; i < 4; ++i) 
+	{
+		QStandardItem *item = new QStandardItem(QString("item %0").arg(i));
+		parentItem->appendRow(item);
+		//parentItem = item;
+	}
+	treeViewMaterial->setModel(materialItemModel);
 }
 
 MeshTool::~MeshTool()
@@ -42,6 +62,15 @@ void MeshTool::on_actionDefaultView_toggled(bool _enabled)
 	}
 }
 
+void MeshTool::on_actionTextureView_toggled(bool _enabled)
+{
+	if (_enabled)
+	{
+		openGLWidget->setViewMode(ViewMode::TEXTURE);
+		openGLWidget->update();
+	}
+}
+
 void MeshTool::on_actionRenderView_toggled(bool _enabled)
 {
 	if (_enabled)
@@ -60,229 +89,58 @@ void MeshTool::on_actionUvView_toggled(bool _enabled)
 	}
 }
 
-void MeshTool::on_albedoRedSpinBox_valueChanged(double _value)
+void MeshTool::on_actionAlbedoTexture_toggled(bool _enabled)
 {
-	if (openGLWidget->material)
+	if (_enabled)
 	{
-		glm::vec4 albedo = openGLWidget->material->getAlbedo();
-		albedo.r = _value;
-		openGLWidget->material->setAlbedo(albedo);
-		openGLWidget->update();
-	}
-	
-}
-
-void MeshTool::on_albedoGreenSpinBox_valueChanged(double _value)
-{
-	if (openGLWidget->material)
-	{
-		glm::vec4 albedo = openGLWidget->material->getAlbedo();
-		albedo.g = _value;
-		openGLWidget->material->setAlbedo(albedo);
+		openGLWidget->setTextureMode(TextureMode::ALBEDO);
 		openGLWidget->update();
 	}
 }
 
-void MeshTool::on_albedoBlueSpinBox_valueChanged(double _value)
+void MeshTool::on_actionMetallicTexture_toggled(bool _enabled)
 {
-	if (openGLWidget->material)
+	if (_enabled)
 	{
-		glm::vec4 albedo = openGLWidget->material->getAlbedo();
-		albedo.b = _value;
-		openGLWidget->material->setAlbedo(albedo);
+		openGLWidget->setTextureMode(TextureMode::METALLIC);
 		openGLWidget->update();
 	}
 }
 
-void MeshTool::on_metallicSpinBox_valueChanged(double _value)
+void MeshTool::on_actionRoughnessTexture_toggled(bool _enabled)
 {
-	if (openGLWidget->material)
+	if (_enabled)
 	{
-		openGLWidget->material->setMetallic(_value);
+		openGLWidget->setTextureMode(TextureMode::ROUGHNESS);
 		openGLWidget->update();
 	}
 }
 
-void MeshTool::on_roughnessSpinBox_valueChanged(double _value)
+void MeshTool::on_actionAmbientOcclusionTexture_toggled(bool _enabled)
 {
-	if (openGLWidget->material)
+	if (_enabled)
 	{
-		openGLWidget->material->setRoughness(_value);
+		openGLWidget->setTextureMode(TextureMode::AMBIENT_OCCLUSION);
 		openGLWidget->update();
 	}
 }
 
-void MeshTool::on_emissiveRedSpinBox_valueChanged(double _value)
+void MeshTool::on_actionEmissiveTexture_toggled(bool _enabled)
 {
-	if (openGLWidget->material)
+	if (_enabled)
 	{
-		glm::vec3 emissive = openGLWidget->material->getEmissive();
-		emissive.r = _value;
-		openGLWidget->material->setEmissive(emissive);
+		openGLWidget->setTextureMode(TextureMode::EMISSIVE);
 		openGLWidget->update();
 	}
 }
 
-void MeshTool::on_emissiveGreenSpinBox_valueChanged(double _value)
+void MeshTool::on_actionDisplacementTexture_toggled(bool _enabled)
 {
-	if (openGLWidget->material)
+	if (_enabled)
 	{
-		glm::vec3 emissive = openGLWidget->material->getEmissive();
-		emissive.g = _value;
-		openGLWidget->material->setEmissive(emissive);
+		openGLWidget->setTextureMode(TextureMode::DISPLACEMENT);
 		openGLWidget->update();
 	}
-}
-
-void MeshTool::on_emissiveBlueSpinBox_valueChanged(double _value)
-{
-	if (openGLWidget->material)
-	{
-		glm::vec3 emissive = openGLWidget->material->getEmissive();
-		emissive.b = _value;
-		openGLWidget->material->setEmissive(emissive);
-		openGLWidget->update();
-	}
-}
-
-void MeshTool::on_albedoTextureButton_clicked()
-{
-	// get file path
-	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open Texture File"), "",
-		tr("DirectDrawSurface (*.dds);;PNG (*.png)"));
-
-	if (!fileName.isEmpty())
-	{
-		openGLWidget->material->setAlbedoMap(Texture::createTexture(fileName.toLatin1().data()));
-		albedoTextureLineEdit->setText(fileName);
-	}
-	else
-	{
-		openGLWidget->material->setAlbedoMap(nullptr);
-		albedoTextureLineEdit->clear();
-	}
-	openGLWidget->update();
-}
-
-void MeshTool::on_normalTextureButton_clicked()
-{
-	// get file path
-	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open Texture File"), "",
-		tr("DirectDrawSurface (*.dds);;PNG (*.png)"));
-
-	if (!fileName.isEmpty())
-	{
-		openGLWidget->material->setNormalMap(Texture::createTexture(fileName.toLatin1().data()));
-		normalTextureLineEdit->setText(fileName);
-	}
-	else
-	{
-		openGLWidget->material->setNormalMap(nullptr);
-		normalTextureLineEdit->clear();
-	}
-	openGLWidget->update();
-}
-
-void MeshTool::on_metallicTextureButton_clicked()
-{
-	// get file path
-	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open Texture File"), "",
-		tr("DirectDrawSurface (*.dds);;PNG (*.png)"));
-
-	if (!fileName.isEmpty())
-	{
-		openGLWidget->material->setMetallicMap(Texture::createTexture(fileName.toLatin1().data()));
-		metallicTextureLineEdit->setText(fileName);
-	}
-	else
-	{
-		openGLWidget->material->setMetallicMap(nullptr);
-		metallicTextureLineEdit->clear();
-	}
-	openGLWidget->update();
-}
-
-void MeshTool::on_roughnessTextureButton_clicked()
-{
-	// get file path
-	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open Texture File"), "",
-		tr("DirectDrawSurface (*.dds);;PNG (*.png)"));
-
-	if (!fileName.isEmpty())
-	{
-		openGLWidget->material->setRoughnessMap(Texture::createTexture(fileName.toLatin1().data()));
-		roughnessTextureLineEdit->setText(fileName);
-	}
-	else
-	{
-		openGLWidget->material->setRoughnessMap(nullptr);
-		roughnessTextureLineEdit->clear();
-	}
-	openGLWidget->update();
-}
-
-void MeshTool::on_aoTextureButton_clicked()
-{
-	// get file path
-	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open Texture File"), "",
-		tr("DirectDrawSurface (*.dds);;PNG (*.png)"));
-
-	if (!fileName.isEmpty())
-	{
-		openGLWidget->material->setAoMap(Texture::createTexture(fileName.toLatin1().data()));
-		aoTextureLineEdit->setText(fileName);
-	}
-	else
-	{
-		openGLWidget->material->setAoMap(nullptr);
-		aoTextureLineEdit->clear();
-	}
-	openGLWidget->update();
-}
-
-void MeshTool::on_emissiveTextureButton_clicked()
-{
-	// get file path
-	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open Texture File"), "",
-		tr("DirectDrawSurface (*.dds);;PNG (*.png)"));
-
-	if (!fileName.isEmpty())
-	{
-		openGLWidget->material->setEmissiveMap(Texture::createTexture(fileName.toLatin1().data()));
-		emissiveTextureLineEdit->setText(fileName);
-	}
-	else
-	{
-		openGLWidget->material->setEmissiveMap(nullptr);
-		emissiveTextureLineEdit->clear();
-	}
-	openGLWidget->update();
-}
-
-void MeshTool::on_displacementTextureButton_clicked()
-{
-	// get file path
-	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open Texture File"), "",
-		tr("DirectDrawSurface (*.dds);;PNG (*.png)"));
-
-	if (!fileName.isEmpty())
-	{
-		openGLWidget->material->setDisplacementMap(Texture::createTexture(fileName.toLatin1().data()));
-		displacementTextureLineEdit->setText(fileName);
-	}
-	else
-	{
-		openGLWidget->material->setDisplacementMap(nullptr);
-		displacementTextureLineEdit->clear();
-	}
-	openGLWidget->update();
 }
 
 void MeshTool::on_actionOpen_triggered()
@@ -319,14 +177,6 @@ void MeshTool::on_actionOpen_triggered()
 				meshTool->openGLWidget->setMesh(*indexedMesh);
 				// the GLMesh created in GLWidget holds a copy of indexedMesh, so delete this instance
 				delete indexedMesh;
-
-				if (meshTool->openGLWidget->material)
-				{
-					meshTool->openGLWidget->material->setAlbedo(glm::vec4(meshTool->albedoRedSpinBox->value(), meshTool->albedoGreenSpinBox->value(), meshTool->albedoBlueSpinBox->value(), 1.0));
-					meshTool->openGLWidget->material->setMetallic(meshTool->metallicSpinBox->value());
-					meshTool->openGLWidget->material->setRoughness(meshTool->roughnessSpinBox->value());
-					meshTool->openGLWidget->material->setEmissive(glm::vec3(meshTool->emissiveRedSpinBox->value(), meshTool->emissiveGreenSpinBox->value(), meshTool->emissiveBlueSpinBox->value()));
-				}
 
 				meshTool->openGLWidget->update();
 

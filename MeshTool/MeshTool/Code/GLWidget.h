@@ -8,7 +8,12 @@
 
 enum class ViewMode
 {
-	DEFAULT, RENDER, UV
+	DEFAULT, TEXTURE, RENDER, UV
+};
+
+enum class TextureMode
+{
+	ALBEDO, METALLIC, ROUGHNESS, AMBIENT_OCCLUSION, EMISSIVE, DISPLACEMENT
 };
 
 class ShaderProgram;
@@ -24,6 +29,7 @@ public:
 	void setMesh(const IndexedMesh &_mesh);
 	void toggleWireframe(bool _enabled);
 	void setViewMode(ViewMode _viewMode);
+	void setTextureMode(TextureMode _textureMode);
 	void centerCamera();
 	Material *material;
 
@@ -42,6 +48,7 @@ private:
 	int height;
 	bool wireframe;
 	ViewMode viewMode;
+	TextureMode textureMode;
 
 	std::shared_ptr<Camera> camera;
 	ArcBallCameraController cameraController;
@@ -64,18 +71,20 @@ private:
 	GLuint depthTexture;
 
 	GLuint paintFbo;
-	GLuint paintTexture;
 
+	GLuint paintTextureWidth;
+	GLuint paintTextureHeight;
 	glm::vec3 paintColor;
 	glm::vec2 mouseCoord;
 	bool restart;
 	bool paint;
 
-	std::shared_ptr<ShaderProgram> testShader;
+	std::shared_ptr<ShaderProgram> defaultShader;
 	std::shared_ptr<ShaderProgram> gridShader;
 	std::shared_ptr<ShaderProgram> uvShader;
 	std::shared_ptr<ShaderProgram> renderShader;
 	std::shared_ptr<ShaderProgram> paintShader;
+	std::shared_ptr<ShaderProgram> textureShader;
 	std::shared_ptr<ShaderProgram> blitShader;
 
 	std::shared_ptr<Texture> irradianceTexture;
@@ -101,5 +110,10 @@ private:
 	Uniform<glm::mat4> uTransformationP = Uniform<glm::mat4>("uTransformation");
 	Uniform<glm::vec3> uColorP = Uniform<glm::vec3>("uColor");
 
+	Uniform<glm::mat4> uModelViewProjectionT = Uniform<glm::mat4>("uModelViewProjection");
+
+	Uniform<GLboolean> uGridModeU = Uniform<GLboolean>("uGridMode");
+
 	void createAttachments(int _width, int _height);
+	GLuint getCurrentPaintTexture();
 };

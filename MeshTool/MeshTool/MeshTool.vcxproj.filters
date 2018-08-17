@@ -156,6 +156,24 @@
     <None Include="Resources\Shaders\default.vert">
       <Filter>Resources\Shaders</Filter>
     </None>
+    <None Include="Resources\Shaders\blit.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\blit.vert">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\paint.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\paint.vert">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\texture.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\texture.vert">
+      <Filter>Resources\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="Code\MeshTool.ui">

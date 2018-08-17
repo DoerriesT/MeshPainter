@@ -164,12 +164,18 @@
     <ClInclude Include="Code\Utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\blit.frag" />
+    <None Include="Resources\Shaders\blit.vert" />
     <None Include="Resources\Shaders\grid.frag" />
     <None Include="Resources\Shaders\grid.vert" />
+    <None Include="Resources\Shaders\paint.frag" />
+    <None Include="Resources\Shaders\paint.vert" />
     <None Include="Resources\Shaders\render.frag" />
     <None Include="Resources\Shaders\render.vert" />
     <None Include="Resources\Shaders\default.frag" />
     <None Include="Resources\Shaders\default.vert" />
+    <None Include="Resources\Shaders\texture.frag" />
+    <None Include="Resources\Shaders\texture.vert" />
     <None Include="Resources\Shaders\uvView.frag" />
     <None Include="Resources\Shaders\uvView.vert" />
   </ItemGroup>

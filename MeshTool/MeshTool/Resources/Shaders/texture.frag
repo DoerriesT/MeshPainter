@@ -9,18 +9,8 @@ layout(binding = 0) uniform sampler2D uTexture;
 
 in vec2 vTexCoord;
 
-uniform bool uGridMode;
-
 void main()
 {
-	vec4 texColor = texture(uTexture, vTexCoord);
-	if (uGridMode)
-	{
-		oFragColor = vec4(1.0 - texColor.rgb, 1.0);
-	}
-	else
-	{
-		oFragColor = texColor;
-	}
+	oFragColor = texture(uTexture, vTexCoord).rgba;
 	oUv = vec4(vTexCoord.x, 1.0 - vTexCoord.y, 1.0, 1.0);
 }
