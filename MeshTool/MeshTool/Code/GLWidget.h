@@ -30,6 +30,12 @@ public:
 	void toggleWireframe(bool _enabled);
 	void setViewMode(ViewMode _viewMode);
 	void setTextureMode(TextureMode _textureMode);
+	void setPaintColor(const glm::vec3 &_paintColor);
+	void setStrokeWidth(float _strokeWidth);
+	void addTexture(TextureMode _textureMode);
+	float getStrokeWidth() const;
+	glm::vec3 getPaintColor() const;
+	void fillActiveTexture();
 	void centerCamera();
 	Material *material;
 
@@ -54,6 +60,7 @@ private:
 	ArcBallCameraController cameraController;
 
 	std::shared_ptr<GLMesh> mesh;
+	std::shared_ptr<Texture> placeholderTexture;
 
 	GLuint gridVAO;
 	GLuint gridVBO;
@@ -76,8 +83,12 @@ private:
 	GLuint paintTextureHeight;
 	glm::vec3 paintColor;
 	glm::vec2 mouseCoord;
+	float strokeWidth;
 	bool restart;
 	bool paint;
+	bool fill;
+	bool add;
+	TextureMode addTexMode;
 
 	std::shared_ptr<ShaderProgram> defaultShader;
 	std::shared_ptr<ShaderProgram> gridShader;

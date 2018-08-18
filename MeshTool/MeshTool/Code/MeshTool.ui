@@ -20,17 +20,7 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QTreeView" name="treeViewModel"/>
-      </item>
-      <item>
-       <widget class="QTreeView" name="treeViewMaterial"/>
-      </item>
-     </layout>
-    </item>
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="GLWidget" name="openGLWidget">
       <property name="sizePolicy">
@@ -74,12 +64,79 @@
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="actionAlbedoTexture"/>
-    <addaction name="actionMetallicTexture"/>
-    <addaction name="actionRoughnessTexture"/>
-    <addaction name="actionAmbientOcclusionTexture"/>
-    <addaction name="actionEmissiveTexture"/>
-    <addaction name="actionDisplacementTexture"/>
+    <widget class="QMenu" name="menuAlbedo">
+     <property name="title">
+      <string>Albedo</string>
+     </property>
+     <addaction name="actionAlbedoSetColor"/>
+     <addaction name="separator"/>
+     <addaction name="actionAlbedoAddTexture"/>
+     <addaction name="actionAlbedoDeleteTexture"/>
+    </widget>
+    <widget class="QMenu" name="menuMetallic">
+     <property name="title">
+      <string>Metallic</string>
+     </property>
+     <addaction name="actionMetallicSetValue"/>
+     <addaction name="separator"/>
+     <addaction name="actionMetallicAddTexture"/>
+     <addaction name="actionMetallicDeleteTexture"/>
+    </widget>
+    <widget class="QMenu" name="menuRoughness">
+     <property name="title">
+      <string>Roughness</string>
+     </property>
+     <addaction name="actionRoughnessSetValue"/>
+     <addaction name="separator"/>
+     <addaction name="actionRoughnessAddTexture"/>
+     <addaction name="actionRoughnessDeleteTexture"/>
+    </widget>
+    <widget class="QMenu" name="menuAmbientOcclusion">
+     <property name="title">
+      <string>Ambient Occlusion</string>
+     </property>
+     <addaction name="actionAmbientOcclusionAddTexture"/>
+     <addaction name="actionAmbientOcclusionDeleteTexture"/>
+    </widget>
+    <widget class="QMenu" name="menuEmissive">
+     <property name="title">
+      <string>Emissive</string>
+     </property>
+     <addaction name="actionEmissiveSetEmissiveColor"/>
+     <addaction name="separator"/>
+     <addaction name="actionEmissiveAddTexture"/>
+     <addaction name="actionEmissiveDeleteTexture"/>
+    </widget>
+    <widget class="QMenu" name="menuDisplacement">
+     <property name="title">
+      <string>Displacement</string>
+     </property>
+     <addaction name="actionDisplacementAddTexture"/>
+     <addaction name="actionDisplacementDeleteTexture"/>
+    </widget>
+    <widget class="QMenu" name="menuActiveTexture">
+     <property name="title">
+      <string>Active Texture</string>
+     </property>
+     <addaction name="actionActivateAlbedoTexture"/>
+     <addaction name="actionActivateMetallicTexture"/>
+     <addaction name="actionActivateRoughnessTexture"/>
+     <addaction name="actionActivateAmbientOcclusionTexture"/>
+     <addaction name="actionActivateEmissiveTexture"/>
+     <addaction name="actionActivateDisplacementTexture"/>
+    </widget>
+    <addaction name="menuActiveTexture"/>
+    <addaction name="separator"/>
+    <addaction name="menuAlbedo"/>
+    <addaction name="menuMetallic"/>
+    <addaction name="menuRoughness"/>
+    <addaction name="menuAmbientOcclusion"/>
+    <addaction name="menuEmissive"/>
+    <addaction name="menuDisplacement"/>
+    <addaction name="separator"/>
+    <addaction name="actionSetStrokeWidth"/>
+    <addaction name="actionSetPaint"/>
+    <addaction name="actionFill"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -87,7 +144,7 @@
   </widget>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>Open Model</string>
    </property>
   </action>
   <action name="actionToggleWireframe">
@@ -146,7 +203,245 @@
     <string>Default View</string>
    </property>
   </action>
-  <action name="actionAlbedoTexture">
+  <action name="actionTextureView">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Texture View</string>
+   </property>
+  </action>
+  <action name="actionSetStrokeWidth">
+   <property name="text">
+    <string>Set Stroke Width</string>
+   </property>
+  </action>
+  <action name="actionSet_Color">
+   <property name="text">
+    <string>Set Color</string>
+   </property>
+  </action>
+  <action name="actionSet_Clear_Color">
+   <property name="text">
+    <string>Set Clear Color</string>
+   </property>
+  </action>
+  <action name="actionSet_Clear_Color_2">
+   <property name="text">
+    <string>Set Clear Color</string>
+   </property>
+  </action>
+  <action name="actionAlbedoSetColor">
+   <property name="text">
+    <string>Set Color</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear Texture</string>
+   </property>
+  </action>
+  <action name="actionSet_Resolution">
+   <property name="text">
+    <string>Set Resolution</string>
+   </property>
+  </action>
+  <action name="actionSet_Clear_Color_3">
+   <property name="text">
+    <string>Set Clear Value</string>
+   </property>
+  </action>
+  <action name="actionMetallicSetValue">
+   <property name="text">
+    <string>Set Value</string>
+   </property>
+  </action>
+  <action name="actionClear_2">
+   <property name="text">
+    <string>Clear Texture</string>
+   </property>
+  </action>
+  <action name="actionSet_Resolution_2">
+   <property name="text">
+    <string>Set Resolution</string>
+   </property>
+  </action>
+  <action name="actionSet_Clear_Color_4">
+   <property name="text">
+    <string>Set Clear Value</string>
+   </property>
+  </action>
+  <action name="actionRoughnessSetValue">
+   <property name="text">
+    <string>Set Value</string>
+   </property>
+  </action>
+  <action name="actionSet_Resolution_3">
+   <property name="text">
+    <string>Set Resolution</string>
+   </property>
+  </action>
+  <action name="actionClear_3">
+   <property name="text">
+    <string>Clear Texture</string>
+   </property>
+  </action>
+  <action name="actionSet_Clear_Color_5">
+   <property name="text">
+    <string>Set Clear Value</string>
+   </property>
+  </action>
+  <action name="actionAmbientOcclusionSet">
+   <property name="text">
+    <string>Set Value</string>
+   </property>
+  </action>
+  <action name="actionSet_Resolution_4">
+   <property name="text">
+    <string>Set Resolution</string>
+   </property>
+  </action>
+  <action name="actionClear_4">
+   <property name="text">
+    <string>Clear Texture</string>
+   </property>
+  </action>
+  <action name="actionSet_Clear_Color_6">
+   <property name="text">
+    <string>Set Clear Color</string>
+   </property>
+  </action>
+  <action name="actionSet_Color_6">
+   <property name="text">
+    <string>Set Color</string>
+   </property>
+  </action>
+  <action name="actionSet_Resolution_5">
+   <property name="text">
+    <string>Set Resolution</string>
+   </property>
+  </action>
+  <action name="actionClear_5">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionSet_Clear_Color_7">
+   <property name="text">
+    <string>Set Clear Color</string>
+   </property>
+  </action>
+  <action name="actionSet_Color_7">
+   <property name="text">
+    <string>Set Color</string>
+   </property>
+  </action>
+  <action name="actionSet_Resolution_6">
+   <property name="text">
+    <string>Set Resolution</string>
+   </property>
+  </action>
+  <action name="actionClear_6">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionEmissiveSetEmissiveColor">
+   <property name="text">
+    <string>Set Emissive Color</string>
+   </property>
+  </action>
+  <action name="actionAlbedoDeleteTexture">
+   <property name="text">
+    <string>Delete Texture</string>
+   </property>
+  </action>
+  <action name="actionAlbedoAddTexture">
+   <property name="text">
+    <string>Add Texture</string>
+   </property>
+  </action>
+  <action name="actionMetallicAddTexture">
+   <property name="text">
+    <string>Add Texture</string>
+   </property>
+  </action>
+  <action name="actionMetallicDeleteTexture">
+   <property name="text">
+    <string>Delete Texture</string>
+   </property>
+  </action>
+  <action name="actionRoughnessAddTexture">
+   <property name="text">
+    <string>Add Texture</string>
+   </property>
+  </action>
+  <action name="actionRoughnessDeleteTexture">
+   <property name="text">
+    <string>Delete Texture</string>
+   </property>
+  </action>
+  <action name="actionAmbientOcclusionAddTexture">
+   <property name="text">
+    <string>Add Texture</string>
+   </property>
+  </action>
+  <action name="actionAmbientOcclusionDeleteTexture">
+   <property name="text">
+    <string>Delete Texture</string>
+   </property>
+  </action>
+  <action name="actionEmissiveAddTexture">
+   <property name="text">
+    <string>Add Texture</string>
+   </property>
+  </action>
+  <action name="actionEmissiveDeleteTexture">
+   <property name="text">
+    <string>Delete Texture</string>
+   </property>
+  </action>
+  <action name="actionDisplacementAddTexture">
+   <property name="text">
+    <string>Add Texture</string>
+   </property>
+  </action>
+  <action name="actionDisplacementDeleteTexture">
+   <property name="text">
+    <string>Delete Texture</string>
+   </property>
+  </action>
+  <action name="actionMake_Current">
+   <property name="text">
+    <string>Make Current</string>
+   </property>
+  </action>
+  <action name="actionMake_Current_2">
+   <property name="text">
+    <string>Make Current</string>
+   </property>
+  </action>
+  <action name="actionMake_Current_3">
+   <property name="text">
+    <string>Make Current</string>
+   </property>
+  </action>
+  <action name="actionMake_Current_4">
+   <property name="text">
+    <string>Make Current</string>
+   </property>
+  </action>
+  <action name="actionMake_Current_5">
+   <property name="text">
+    <string>Make Current</string>
+   </property>
+  </action>
+  <action name="actionMake_Current_6">
+   <property name="text">
+    <string>Make Current</string>
+   </property>
+  </action>
+  <action name="actionActivateAlbedoTexture">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -157,7 +452,7 @@
     <string>Albedo Texture</string>
    </property>
   </action>
-  <action name="actionMetallicTexture">
+  <action name="actionActivateMetallicTexture">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -165,7 +460,7 @@
     <string>Metallic Texture</string>
    </property>
   </action>
-  <action name="actionRoughnessTexture">
+  <action name="actionActivateRoughnessTexture">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -173,7 +468,7 @@
     <string>Roughness Texture</string>
    </property>
   </action>
-  <action name="actionAmbientOcclusionTexture">
+  <action name="actionActivateAmbientOcclusionTexture">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -181,7 +476,7 @@
     <string>Ambient Occlusion Texture</string>
    </property>
   </action>
-  <action name="actionEmissiveTexture">
+  <action name="actionActivateEmissiveTexture">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -189,20 +484,25 @@
     <string>Emissive Texture</string>
    </property>
   </action>
-  <action name="actionDisplacementTexture">
+  <action name="actionActivateDisplacementTexture">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Displacement Texture</string>
    </property>
   </action>
-  <action name="actionTextureView">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
+  <action name="actionSetPaint">
    <property name="text">
-    <string>Texture View</string>
+    <string>Set Paint</string>
+   </property>
+  </action>
+  <action name="actionFill">
+   <property name="text">
+    <string>Fill</string>
    </property>
   </action>
  </widget>

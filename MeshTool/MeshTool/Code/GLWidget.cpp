@@ -14,6 +14,9 @@ GLWidget::GLWidget(QWidget *parent)
 	wireframe(false),
 	paint(false),
 	restart(true),
+	fill(false),
+	add(false),
+	strokeWidth(5.0f),
 	viewMode(ViewMode::DEFAULT),
 	textureMode(TextureMode::ALBEDO),
 	paintTextureWidth(1024),
@@ -52,6 +55,37 @@ void GLWidget::setViewMode(ViewMode _viewMode)
 void GLWidget::setTextureMode(TextureMode _textureMode)
 {
 	textureMode = _textureMode;
+}
+
+void GLWidget::setPaintColor(const glm::vec3 &_paintColor)
+{
+	paintColor = _paintColor;
+}
+
+void GLWidget::setStrokeWidth(float _strokeWidth)
+{
+	strokeWidth = _strokeWidth;
+}
+
+void GLWidget::addTexture(TextureMode _textureMode)
+{
+	add = true;
+	addTexMode = _textureMode;
+}
+
+float GLWidget::getStrokeWidth() const
+{
+	return strokeWidth;
+}
+
+glm::vec3 GLWidget::getPaintColor() const
+{
+	return paintColor;
+}
+
+void GLWidget::fillActiveTexture()
+{
+	fill = true;
 }
 
 void GLWidget::centerCamera()
@@ -277,11 +311,12 @@ void GLWidget::initializeGL()
 
 	cameraController.update(glm::vec2(0.0f), 0.0f, false);
 
-	material = new Material(glm::vec4(0.0, 0.0, 0.0, 1.0));
+	material = new Material(glm::vec4(1.0));
 
 	irradianceTexture = Texture::createTexture("Resources/Textures/irradiance.dds");
 	reflectanceTexture = Texture::createTexture("Resources/Textures/reflectance.dds");
 	brdfLUT = Texture::createTexture("Resources/Textures/brdf.dds");
+	placeholderTexture = Texture::createTexture("Resources/Textures/placeholder.png");
 
 	funcs->glActiveTexture(GL_TEXTURE7);
 	funcs->glBindTexture(irradianceTexture->getTarget(), irradianceTexture->getId());
@@ -292,110 +327,82 @@ void GLWidget::initializeGL()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	// create textures to paint to
-	{
-		GLuint albedoTexture;
-		funcs->glGenTextures(1, &albedoTexture);
-		funcs->glBindTexture(GL_TEXTURE_2D, albedoTexture);
-		funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, paintTextureWidth, paintTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		GLuint metallicTexture;
-		funcs->glGenTextures(1, &metallicTexture);
-		funcs->glBindTexture(GL_TEXTURE_2D, metallicTexture);
-		funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, paintTextureWidth, paintTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		GLuint roughnessTexture;
-		funcs->glGenTextures(1, &roughnessTexture);
-		funcs->glBindTexture(GL_TEXTURE_2D, roughnessTexture);
-		funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, paintTextureWidth, paintTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		GLuint aoTexture;
-		funcs->glGenTextures(1, &aoTexture);
-		funcs->glBindTexture(GL_TEXTURE_2D, aoTexture);
-		funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, paintTextureWidth, paintTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		GLuint emissiveTexture;
-		funcs->glGenTextures(1, &emissiveTexture);
-		funcs->glBindTexture(GL_TEXTURE_2D, emissiveTexture);
-		funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, paintTextureWidth, paintTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		GLuint displacementTexture;
-		funcs->glGenTextures(1, &displacementTexture);
-		funcs->glBindTexture(GL_TEXTURE_2D, displacementTexture);
-		funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, paintTextureWidth, paintTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		material->setAlbedoMap(Texture::createTexture(albedoTexture, GL_TEXTURE_2D));
-		material->setMetallicMap(Texture::createTexture(metallicTexture, GL_TEXTURE_2D));
-		material->setRoughnessMap(Texture::createTexture(roughnessTexture, GL_TEXTURE_2D));
-		material->setAoMap(Texture::createTexture(aoTexture, GL_TEXTURE_2D));
-		material->setEmissiveMap(Texture::createTexture(emissiveTexture, GL_TEXTURE_2D));
-		material->setDisplacementMap(Texture::createTexture(displacementTexture, GL_TEXTURE_2D));
-	}
-
-	// clear textures to default value
-	{
-		funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
-
-		// albedo
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getAlbedoMap()->getId(), 0);
-		funcs->glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		funcs->glClear(GL_COLOR_BUFFER_BIT);
-
-		// metallic
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getMetallicMap()->getId(), 0);
-		funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		funcs->glClear(GL_COLOR_BUFFER_BIT);
-
-		// roughness
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getRoughnessMap()->getId(), 0);
-		funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		funcs->glClear(GL_COLOR_BUFFER_BIT);
-
-		// ao
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getAoMap()->getId(), 0);
-		funcs->glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		funcs->glClear(GL_COLOR_BUFFER_BIT);
-
-		// emissive
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getEmissiveMap()->getId(), 0);
-		funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		funcs->glClear(GL_COLOR_BUFFER_BIT);
-
-		// displacement
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getDisplacementMap()->getId(), 0);
-		funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		funcs->glClear(GL_COLOR_BUFFER_BIT);
-	}
 	
 }
 
 void GLWidget::paintGL()
 {
 	funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	if (add)
+	{
+		add = false;
+
+		GLuint tex;
+		funcs->glGenTextures(1, &tex);
+		funcs->glBindTexture(GL_TEXTURE_2D, tex);
+		funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, paintTextureWidth, paintTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		switch (addTexMode)
+		{
+		case TextureMode::ALBEDO:
+		{
+			material->setAlbedoMap(Texture::createTexture(tex, GL_TEXTURE_2D));
+			break;
+		}
+		case TextureMode::METALLIC:
+		{
+			material->setMetallicMap(Texture::createTexture(tex, GL_TEXTURE_2D));
+			break;
+		}
+		case TextureMode::ROUGHNESS:
+		{
+			material->setRoughnessMap(Texture::createTexture(tex, GL_TEXTURE_2D));
+			break;
+		}
+		case TextureMode::AMBIENT_OCCLUSION:
+		{
+			material->setAoMap(Texture::createTexture(tex, GL_TEXTURE_2D));
+			break;
+		}
+		case TextureMode::EMISSIVE:
+		{
+			material->setEmissiveMap(Texture::createTexture(tex, GL_TEXTURE_2D));
+			break;
+		}
+		case TextureMode::DISPLACEMENT:
+		{
+			material->setDisplacementMap(Texture::createTexture(tex, GL_TEXTURE_2D));
+			break;
+		}
+		}
+
+		funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
+		funcs->glClearColor(paintColor.r, paintColor.g, paintColor.b, 1.0f);
+		funcs->glClear(GL_COLOR_BUFFER_BIT);
+		funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	}
+
+	if (fill)
+	{
+		fill = false;
+
+		GLuint currentPaintTexture = getCurrentPaintTexture();
+
+		if (currentPaintTexture != 0)
+		{
+			funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
+			funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getCurrentPaintTexture(), 0);
+			funcs->glClearColor(paintColor.r, paintColor.g, paintColor.b, 1.0f);
+			funcs->glClear(GL_COLOR_BUFFER_BIT);
+			funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		}
+	}
 
 	if (paint)
 	{
@@ -409,58 +416,62 @@ void GLWidget::paintGL()
 			prevMouseCoord = mouseCoord;
 		}
 
-		std::vector<glm::vec4> coords;
-		
-		unsigned int pointCount = glm::round(glm::distance(mouseCoord, prevMouseCoord));
+		GLuint currentPaintTexture = getCurrentPaintTexture();
 
-		funcs->glReadBuffer(GL_COLOR_ATTACHMENT1);
-		for (unsigned int i = 0; i < pointCount; ++i)
+		if (currentPaintTexture != 0)
 		{
-			glm::vec2 coord = glm::mix(prevMouseCoord, mouseCoord, float(i) / pointCount);
-			glm::vec4 data;
-			funcs->glReadPixels(GLint(coord.x), height - GLint(coord.y), 1, 1, GL_RGBA, GL_FLOAT, &data);
-			coords.push_back(data);
-		}
+			std::vector<glm::vec4> coords;
 
-		prevMouseCoord = mouseCoord;
+			unsigned int pointCount = glm::round(glm::distance(mouseCoord, prevMouseCoord));
 
-		paintShader->bind();
-		float strokeWidth = 10.0f;
-		uColorP.set(paintColor);
-		Utility::glErrorCheck();
-		funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getCurrentPaintTexture(), 0);
-		Utility::glErrorCheck();
-		funcs->glViewport(0, 0, paintTextureWidth, paintTextureHeight);
-
-		funcs->glEnable(GL_BLEND);
-		funcs->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		funcs->glBindVertexArray(quadVAO);
-		funcs->glEnableVertexAttribArray(0);
-		Utility::glErrorCheck();
-		for (glm::vec4 &data : coords)
-		{
-			// valid paint coord
-			if (data.b > 0)
+			funcs->glReadBuffer(GL_COLOR_ATTACHMENT1);
+			for (unsigned int i = 0; i < pointCount; ++i)
 			{
-				glm::vec2 paintCoord(data.x, 1.0f - data.y);
-
-				glm::mat4 transform = glm::translate(glm::mat4(), glm::vec3(paintCoord * 2.0f - 1.0f, 0.0f))
-					* glm::scale(glm::mat4(), glm::vec3((1.0f / paintTextureWidth) * strokeWidth, (1.0f / paintTextureHeight) * strokeWidth, 1.0f));
-
-				uTransformationP.set(transform);
-				Utility::glErrorCheck();
-				funcs->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-				Utility::glErrorCheck();
+				glm::vec2 coord = glm::mix(prevMouseCoord, mouseCoord, float(i) / pointCount);
+				glm::vec4 data;
+				funcs->glReadPixels(GLint(coord.x), height - GLint(coord.y), 1, 1, GL_RGBA, GL_FLOAT, &data);
+				coords.push_back(data);
 			}
+
+			prevMouseCoord = mouseCoord;
+
+			paintShader->bind();
+			uColorP.set(paintColor);
+			Utility::glErrorCheck();
+			funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
+			funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, currentPaintTexture, 0);
+			Utility::glErrorCheck();
+			funcs->glViewport(0, 0, paintTextureWidth, paintTextureHeight);
+
+			funcs->glEnable(GL_BLEND);
+			funcs->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			funcs->glBindVertexArray(quadVAO);
+			funcs->glEnableVertexAttribArray(0);
+			Utility::glErrorCheck();
+			for (glm::vec4 &data : coords)
+			{
+				// valid paint coord
+				if (data.b > 0)
+				{
+					glm::vec2 paintCoord(data.x, 1.0f - data.y);
+
+					glm::mat4 transform = glm::translate(glm::mat4(), glm::vec3(paintCoord * 2.0f - 1.0f, 0.0f))
+						* glm::scale(glm::mat4(), glm::vec3((1.0f / paintTextureWidth) * strokeWidth, (1.0f / paintTextureHeight) * strokeWidth, 1.0f));
+
+					uTransformationP.set(transform);
+					Utility::glErrorCheck();
+					funcs->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+					Utility::glErrorCheck();
+				}
+			}
+
+			Utility::glErrorCheck();
+			funcs->glDisable(GL_BLEND);
+			funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+			funcs->glViewport(0, 0, width, height);
+			Utility::glErrorCheck();
 		}
-		
-		Utility::glErrorCheck();
-		funcs->glDisable(GL_BLEND);
-		funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		funcs->glViewport(0, 0, width, height);
-		Utility::glErrorCheck();
 	}
 
 	const GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
@@ -504,8 +515,10 @@ void GLWidget::paintGL()
 
 			uModelViewProjectionT.set(projection * camera->getViewMatrix());
 
+			GLuint currentPaintTexture = getCurrentPaintTexture();
+
 			funcs->glActiveTexture(GL_TEXTURE0);
-			funcs->glBindTexture(GL_TEXTURE_2D, getCurrentPaintTexture());
+			funcs->glBindTexture(GL_TEXTURE_2D, currentPaintTexture ? currentPaintTexture : placeholderTexture->getId());
 
 			mesh->enableVertexAttribArrays();
 			mesh->render();
@@ -540,8 +553,10 @@ void GLWidget::paintGL()
 		{
 			uvShader->bind();
 
+			GLuint currentPaintTexture = getCurrentPaintTexture();
+
 			funcs->glActiveTexture(GL_TEXTURE0);
-			funcs->glBindTexture(GL_TEXTURE_2D, getCurrentPaintTexture());
+			funcs->glBindTexture(GL_TEXTURE_2D, currentPaintTexture ? currentPaintTexture : placeholderTexture->getId());
 
 			mesh->enableVertexAttribArrays();
 
@@ -632,7 +647,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent * _event)
 	{
 		paint = true;
 		mouseCoord = currentPos;
-		paintColor = glm::vec3(1.0, 0.0, 0.0);
+		//paintColor = glm::vec3(1.0, 0.0, 0.0);
 		update();
 	}
 }
@@ -650,7 +665,7 @@ void GLWidget::mousePressEvent(QMouseEvent * _event)
 		restart = true;
 		paint = true;
 		mouseCoord = glm::vec2(currentPosQ.x(), currentPosQ.y());
-		paintColor = colors[c++ % 3];
+		//paintColor = colors[c++ % 3];
 		update();
 	}
 }

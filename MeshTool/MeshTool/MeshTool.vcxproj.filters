@@ -29,6 +29,12 @@
     <Filter Include="Resources\Shaders">
       <UniqueIdentifier>{b5bed18a-e0cd-4b5c-8a59-e86f4f81dffa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code\UI">
+      <UniqueIdentifier>{6d67892b-cba5-48a9-806f-b2d4e650f84a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Graphics">
+      <UniqueIdentifier>{1d402751-eb9a-46c2-88d4-fb55c7a756ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="MeshTool.qrc">
@@ -42,93 +48,93 @@
     <ClCompile Include="Code\main.cpp">
       <Filter>Code</Filter>
     </ClCompile>
-    <ClCompile Include="Code\GLWidget.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
     <ClCompile Include="Code\Utility.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\ShaderProgram.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\OBJLoader.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\Mesh.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\GLFunctions.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\Camera.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\ArcBallCameraController.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\MeshTool.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\Material.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\Texture.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\Uniform.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\stb_image.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\stb_image_resize.cpp">
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="Code\HalfEdgeMesh.cpp">
       <Filter>Code</Filter>
     </ClCompile>
+    <ClCompile Include="Code\MeshTool.cpp">
+      <Filter>Code\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\GLWidget.cpp">
+      <Filter>Code\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\ArcBallCameraController.cpp">
+      <Filter>Code\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Camera.cpp">
+      <Filter>Code\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\GLFunctions.cpp">
+      <Filter>Code\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Material.cpp">
+      <Filter>Code\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Mesh.cpp">
+      <Filter>Code\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\OBJLoader.cpp">
+      <Filter>Code\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\ShaderProgram.cpp">
+      <Filter>Code\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\stb_image.cpp">
+      <Filter>Code\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\stb_image_resize.cpp">
+      <Filter>Code\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Texture.cpp">
+      <Filter>Code\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Uniform.cpp">
+      <Filter>Code\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="Code\GLWidget.h">
-      <Filter>Code</Filter>
-    </QtMoc>
     <QtMoc Include="Code\MeshTool.h">
-      <Filter>Code</Filter>
+      <Filter>Code\UI</Filter>
+    </QtMoc>
+    <QtMoc Include="Code\GLWidget.h">
+      <Filter>Code\UI</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Utility.h">
       <Filter>Code</Filter>
     </ClInclude>
-    <ClInclude Include="Code\ShaderProgram.h">
-      <Filter>Code</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\OBJLoader.h">
-      <Filter>Code</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\Mesh.h">
-      <Filter>Code</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\Uniform.h">
-      <Filter>Code</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\GLFunctions.h">
-      <Filter>Code</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\Camera.h">
+    <ClInclude Include="Code\HalfEdgeMesh.h">
       <Filter>Code</Filter>
     </ClInclude>
     <ClInclude Include="Code\ArcBallCameraController.h">
-      <Filter>Code</Filter>
+      <Filter>Code\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Camera.h">
+      <Filter>Code\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\GLFunctions.h">
+      <Filter>Code\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Code\Material.h">
-      <Filter>Code</Filter>
+      <Filter>Code\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Mesh.h">
+      <Filter>Code\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\OBJLoader.h">
+      <Filter>Code\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ShaderProgram.h">
+      <Filter>Code\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Code\Texture.h">
-      <Filter>Code</Filter>
+      <Filter>Code\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Code\HalfEdgeMesh.h">
-      <Filter>Code</Filter>
+    <ClInclude Include="Code\Uniform.h">
+      <Filter>Code\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

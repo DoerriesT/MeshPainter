@@ -24,17 +24,15 @@ void UniformMaterial::create(const std::shared_ptr<ShaderProgram> &_shaderProgra
 	displacement.create(shaderProgram);
 }
 
-bool disp = true;
-
 void UniformMaterial::set(const Material *_value)
 {
 	albedo.set(_value->getAlbedo());
 	metallic.set(_value->getMetallic());
 	roughness.set(_value->getRoughness());
 	emissive.set(_value->getEmissive());
-	mapBitField.set(_value->getMapBitField() | Material::METALLIC);
+	mapBitField.set(_value->getMapBitField());
 	std::shared_ptr<Texture> displacementMap = _value->getDisplacementMap();
-	displacement.set(displacementMap && disp || true);
+	displacement.set(displacementMap != nullptr);
 }
 
 bool UniformMaterial::isValid()
