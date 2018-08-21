@@ -64,56 +64,6 @@
     <property name="title">
      <string>Edit</string>
     </property>
-    <widget class="QMenu" name="menuAlbedo">
-     <property name="title">
-      <string>Albedo</string>
-     </property>
-     <addaction name="actionAlbedoSetColor"/>
-     <addaction name="separator"/>
-     <addaction name="actionAlbedoAddTexture"/>
-     <addaction name="actionAlbedoDeleteTexture"/>
-    </widget>
-    <widget class="QMenu" name="menuMetallic">
-     <property name="title">
-      <string>Metallic</string>
-     </property>
-     <addaction name="actionMetallicSetValue"/>
-     <addaction name="separator"/>
-     <addaction name="actionMetallicAddTexture"/>
-     <addaction name="actionMetallicDeleteTexture"/>
-    </widget>
-    <widget class="QMenu" name="menuRoughness">
-     <property name="title">
-      <string>Roughness</string>
-     </property>
-     <addaction name="actionRoughnessSetValue"/>
-     <addaction name="separator"/>
-     <addaction name="actionRoughnessAddTexture"/>
-     <addaction name="actionRoughnessDeleteTexture"/>
-    </widget>
-    <widget class="QMenu" name="menuAmbientOcclusion">
-     <property name="title">
-      <string>Ambient Occlusion</string>
-     </property>
-     <addaction name="actionAmbientOcclusionAddTexture"/>
-     <addaction name="actionAmbientOcclusionDeleteTexture"/>
-    </widget>
-    <widget class="QMenu" name="menuEmissive">
-     <property name="title">
-      <string>Emissive</string>
-     </property>
-     <addaction name="actionEmissiveSetEmissiveColor"/>
-     <addaction name="separator"/>
-     <addaction name="actionEmissiveAddTexture"/>
-     <addaction name="actionEmissiveDeleteTexture"/>
-    </widget>
-    <widget class="QMenu" name="menuDisplacement">
-     <property name="title">
-      <string>Displacement</string>
-     </property>
-     <addaction name="actionDisplacementAddTexture"/>
-     <addaction name="actionDisplacementDeleteTexture"/>
-    </widget>
     <widget class="QMenu" name="menuActiveTexture">
      <property name="title">
       <string>Active Texture</string>
@@ -127,16 +77,12 @@
     </widget>
     <addaction name="menuActiveTexture"/>
     <addaction name="separator"/>
-    <addaction name="menuAlbedo"/>
-    <addaction name="menuMetallic"/>
-    <addaction name="menuRoughness"/>
-    <addaction name="menuAmbientOcclusion"/>
-    <addaction name="menuEmissive"/>
-    <addaction name="menuDisplacement"/>
-    <addaction name="separator"/>
     <addaction name="actionSetStrokeWidth"/>
     <addaction name="actionSetPaint"/>
-    <addaction name="actionFill"/>
+    <addaction name="actionClearActive"/>
+    <addaction name="actionClearAll"/>
+    <addaction name="separator"/>
+    <addaction name="actionSetEmissiveColor"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -500,9 +446,19 @@
     <string>Set Paint</string>
    </property>
   </action>
-  <action name="actionFill">
+  <action name="actionClearActive">
    <property name="text">
-    <string>Fill</string>
+    <string>Clear Active Texture</string>
+   </property>
+  </action>
+  <action name="actionSetEmissiveColor">
+   <property name="text">
+    <string>Set Emissive Color</string>
+   </property>
+  </action>
+  <action name="actionClearAll">
+   <property name="text">
+    <string>Clear All Textures</string>
    </property>
   </action>
  </widget>

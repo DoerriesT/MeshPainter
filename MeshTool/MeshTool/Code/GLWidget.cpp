@@ -14,8 +14,6 @@ GLWidget::GLWidget(QWidget *parent)
 	wireframe(false),
 	paint(false),
 	restart(true),
-	fill(false),
-	add(false),
 	strokeWidth(5.0f),
 	viewMode(ViewMode::DEFAULT),
 	textureMode(TextureMode::ALBEDO),
@@ -67,12 +65,6 @@ void GLWidget::setStrokeWidth(float _strokeWidth)
 	strokeWidth = _strokeWidth;
 }
 
-void GLWidget::addTexture(TextureMode _textureMode)
-{
-	add = true;
-	addTexMode = _textureMode;
-}
-
 float GLWidget::getStrokeWidth() const
 {
 	return strokeWidth;
@@ -83,9 +75,71 @@ glm::vec3 GLWidget::getPaintColor() const
 	return paintColor;
 }
 
-void GLWidget::fillActiveTexture()
+void GLWidget::clearActiveTexture(const glm::vec3 &_clearColor)
 {
-	fill = true;
+	makeCurrent();
+
+	GLuint currentPaintTexture = getCurrentPaintTexture();
+
+	if (currentPaintTexture != 0)
+	{
+		funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getCurrentPaintTexture(), 0);
+		funcs->glClearColor(_clearColor.r, _clearColor.g, _clearColor.b, 1.0f);
+		funcs->glClear(GL_COLOR_BUFFER_BIT);
+		funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	}
+}
+
+void GLWidget::clearAllTextures()
+{
+	makeCurrent();
+
+	funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
+
+	// albedo
+	{
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getAlbedoMap()->getId(), 0);
+		funcs->glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		funcs->glClear(GL_COLOR_BUFFER_BIT);
+	}
+	
+	// metallic
+	{
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getMetallicMap()->getId(), 0);
+		funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		funcs->glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	// roughness
+	{
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getRoughnessMap()->getId(), 0);
+		funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		funcs->glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	// ao
+	{
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getAoMap()->getId(), 0);
+		funcs->glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		funcs->glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	// emissive
+	{
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getEmissiveMap()->getId(), 0);
+		funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		funcs->glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	// displacement
+	{
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getDisplacementMap()->getId(), 0);
+		funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		funcs->glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 }
 
 void GLWidget::centerCamera()
@@ -316,7 +370,6 @@ void GLWidget::initializeGL()
 	irradianceTexture = Texture::createTexture("Resources/Textures/irradiance.dds");
 	reflectanceTexture = Texture::createTexture("Resources/Textures/reflectance.dds");
 	brdfLUT = Texture::createTexture("Resources/Textures/brdf.dds");
-	placeholderTexture = Texture::createTexture("Resources/Textures/placeholder.png");
 
 	funcs->glActiveTexture(GL_TEXTURE7);
 	funcs->glBindTexture(irradianceTexture->getTarget(), irradianceTexture->getId());
@@ -327,82 +380,19 @@ void GLWidget::initializeGL()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	
+	material->setAlbedoMap(createTexture(paintTextureWidth, paintTextureHeight));
+	material->setMetallicMap(createTexture(paintTextureWidth, paintTextureHeight));
+	material->setRoughnessMap(createTexture(paintTextureWidth, paintTextureHeight));
+	material->setAoMap(createTexture(paintTextureWidth, paintTextureHeight));
+	material->setEmissiveMap(createTexture(paintTextureWidth, paintTextureHeight));
+	material->setDisplacementMap(createTexture(paintTextureWidth, paintTextureHeight));
+
+	clearAllTextures();
 }
 
 void GLWidget::paintGL()
 {
 	funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-	if (add)
-	{
-		add = false;
-
-		GLuint tex;
-		funcs->glGenTextures(1, &tex);
-		funcs->glBindTexture(GL_TEXTURE_2D, tex);
-		funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, paintTextureWidth, paintTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		switch (addTexMode)
-		{
-		case TextureMode::ALBEDO:
-		{
-			material->setAlbedoMap(Texture::createTexture(tex, GL_TEXTURE_2D));
-			break;
-		}
-		case TextureMode::METALLIC:
-		{
-			material->setMetallicMap(Texture::createTexture(tex, GL_TEXTURE_2D));
-			break;
-		}
-		case TextureMode::ROUGHNESS:
-		{
-			material->setRoughnessMap(Texture::createTexture(tex, GL_TEXTURE_2D));
-			break;
-		}
-		case TextureMode::AMBIENT_OCCLUSION:
-		{
-			material->setAoMap(Texture::createTexture(tex, GL_TEXTURE_2D));
-			break;
-		}
-		case TextureMode::EMISSIVE:
-		{
-			material->setEmissiveMap(Texture::createTexture(tex, GL_TEXTURE_2D));
-			break;
-		}
-		case TextureMode::DISPLACEMENT:
-		{
-			material->setDisplacementMap(Texture::createTexture(tex, GL_TEXTURE_2D));
-			break;
-		}
-		}
-
-		funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
-		funcs->glClearColor(paintColor.r, paintColor.g, paintColor.b, 1.0f);
-		funcs->glClear(GL_COLOR_BUFFER_BIT);
-		funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	}
-
-	if (fill)
-	{
-		fill = false;
-
-		GLuint currentPaintTexture = getCurrentPaintTexture();
-
-		if (currentPaintTexture != 0)
-		{
-			funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
-			funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getCurrentPaintTexture(), 0);
-			funcs->glClearColor(paintColor.r, paintColor.g, paintColor.b, 1.0f);
-			funcs->glClear(GL_COLOR_BUFFER_BIT);
-			funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		}
-	}
 
 	if (paint)
 	{
@@ -518,7 +508,7 @@ void GLWidget::paintGL()
 			GLuint currentPaintTexture = getCurrentPaintTexture();
 
 			funcs->glActiveTexture(GL_TEXTURE0);
-			funcs->glBindTexture(GL_TEXTURE_2D, currentPaintTexture ? currentPaintTexture : placeholderTexture->getId());
+			funcs->glBindTexture(GL_TEXTURE_2D, currentPaintTexture);
 
 			mesh->enableVertexAttribArrays();
 			mesh->render();
@@ -556,7 +546,7 @@ void GLWidget::paintGL()
 			GLuint currentPaintTexture = getCurrentPaintTexture();
 
 			funcs->glActiveTexture(GL_TEXTURE0);
-			funcs->glBindTexture(GL_TEXTURE_2D, currentPaintTexture ? currentPaintTexture : placeholderTexture->getId());
+			funcs->glBindTexture(GL_TEXTURE_2D, currentPaintTexture);
 
 			mesh->enableVertexAttribArrays();
 
@@ -724,6 +714,19 @@ void GLWidget::createAttachments(int _width, int _height)
 	funcs->glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	Utility::glErrorCheck();
+}
+
+std::shared_ptr<Texture> GLWidget::createTexture(int _width, int _height)
+{
+	GLuint tex;
+	funcs->glGenTextures(1, &tex);
+	funcs->glBindTexture(GL_TEXTURE_2D, tex);
+	funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	return Texture::createTexture(tex, GL_TEXTURE_2D);
 }
 
 GLuint GLWidget::getCurrentPaintTexture()
