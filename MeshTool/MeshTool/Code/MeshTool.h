@@ -21,6 +21,19 @@ private slots:
 
 	// file
 	void on_actionOpen_triggered();
+	void on_actionOpenAlbedoTexture_triggered();
+	void on_actionOpenMetallicTexture_triggered();
+	void on_actionOpenRoughnessTexture_triggered();
+	void on_actionOpenAmbientOcclusionTexture_triggered();
+	void on_actionOpenEmissiveTexture_triggered();
+	void on_actionOpenDisplacementTexture_triggered();
+	void on_actionSaveAlbedoTexture_triggered();
+	void on_actionSaveMetallicTexture_triggered();
+	void on_actionSaveRoughnessTexture_triggered();
+	void on_actionSaveAmbientOcclusionTexture_triggered();
+	void on_actionSaveEmissiveTexture_triggered();
+	void on_actionSaveDisplacementTexture_triggered();
+	void on_actionSaveAllTextures_triggered();
 	
 	// edit
 	void on_actionActivateAlbedoTexture_toggled(bool _enabled);

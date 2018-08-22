@@ -14,6 +14,8 @@ namespace Utility
 	// this method is not very fast
 	std::string getPathFileExtension(const std::string &filePath);
 
+	std::string getFormatedTime();
+
 	void glErrorCheck();
 }
 

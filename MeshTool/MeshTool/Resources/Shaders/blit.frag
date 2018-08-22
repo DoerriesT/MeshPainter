@@ -3,10 +3,9 @@
 out vec4 oFragColor;
 in vec2 vTexCoord;
 
-layout(binding=15) uniform sampler2D uScreenTexture;
+layout(binding=15) uniform sampler2D uSourceTexture;
 
 void main()
 {
-	vec2 texCoord = gl_FragCoord.xy / textureSize(uScreenTexture, 0);
-	oFragColor = vec4(1.0, 0.0, 0.0, 1.0);//texture(uScreenTexture, texCoord).rgba;
+	oFragColor = texture(uSourceTexture, vTexCoord).rgba;
 }

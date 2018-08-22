@@ -46,7 +46,32 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuOpenTexture">
+     <property name="title">
+      <string>Open Texture</string>
+     </property>
+     <addaction name="actionOpenAlbedoTexture"/>
+     <addaction name="actionOpenMetallicTexture"/>
+     <addaction name="actionOpenRoughnessTexture"/>
+     <addaction name="actionOpenAmbientOcclusionTexture"/>
+     <addaction name="actionOpenEmissiveTexture"/>
+     <addaction name="actionOpenDisplacementTexture"/>
+    </widget>
+    <widget class="QMenu" name="menuSaveTexture">
+     <property name="title">
+      <string>Save Texture</string>
+     </property>
+     <addaction name="actionSaveAlbedoTexture"/>
+     <addaction name="actionSaveMetallicTexture"/>
+     <addaction name="actionSaveRoughnessTexture"/>
+     <addaction name="actionSaveAmbientOcclusionTexture"/>
+     <addaction name="actionSaveEmissiveTexture"/>
+     <addaction name="actionSaveDisplacementTexture"/>
+    </widget>
     <addaction name="actionOpen"/>
+    <addaction name="menuOpenTexture"/>
+    <addaction name="menuSaveTexture"/>
+    <addaction name="actionSaveAllTextures"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -459,6 +484,71 @@
   <action name="actionClearAll">
    <property name="text">
     <string>Clear All Textures</string>
+   </property>
+  </action>
+  <action name="actionOpenAlbedoTexture">
+   <property name="text">
+    <string>Albedo</string>
+   </property>
+  </action>
+  <action name="actionOpenMetallicTexture">
+   <property name="text">
+    <string>Metallic</string>
+   </property>
+  </action>
+  <action name="actionOpenRoughnessTexture">
+   <property name="text">
+    <string>Roughness</string>
+   </property>
+  </action>
+  <action name="actionOpenAmbientOcclusionTexture">
+   <property name="text">
+    <string>Ambient Occlusion</string>
+   </property>
+  </action>
+  <action name="actionOpenEmissiveTexture">
+   <property name="text">
+    <string>Emissive</string>
+   </property>
+  </action>
+  <action name="actionOpenDisplacementTexture">
+   <property name="text">
+    <string>Displacement</string>
+   </property>
+  </action>
+  <action name="actionSaveAllTextures">
+   <property name="text">
+    <string>Save All Textures</string>
+   </property>
+  </action>
+  <action name="actionSaveAlbedoTexture">
+   <property name="text">
+    <string>Albedo</string>
+   </property>
+  </action>
+  <action name="actionSaveMetallicTexture">
+   <property name="text">
+    <string>Metallic</string>
+   </property>
+  </action>
+  <action name="actionSaveRoughnessTexture">
+   <property name="text">
+    <string>Roughness</string>
+   </property>
+  </action>
+  <action name="actionSaveAmbientOcclusionTexture">
+   <property name="text">
+    <string>Ambient Occlusion</string>
+   </property>
+  </action>
+  <action name="actionSaveEmissiveTexture">
+   <property name="text">
+    <string>Emissive</string>
+   </property>
+  </action>
+  <action name="actionSaveDisplacementTexture">
+   <property name="text">
+    <string>Displacement</string>
    </property>
   </action>
  </widget>

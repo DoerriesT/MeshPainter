@@ -12,5 +12,4 @@ void main()
 {	
     gl_Position = uModelViewProjection * vec4(aPosition, 1.0);
 	vTexCoord = aTexCoord;
-	vTexCoord.y = 1.0 - vTexCoord.y;
 }

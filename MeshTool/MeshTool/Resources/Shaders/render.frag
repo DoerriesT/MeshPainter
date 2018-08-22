@@ -117,7 +117,7 @@ vec3 fresnelSchlickRoughness(float HdotV, vec3 F0, float roughness)
 void main()
 {
 	vec2 texCoord = vTexCoord;
-	oUv = vec4(vTexCoord.x, 1.0 - vTexCoord.y, 1.0, 1.0);
+	oUv = vec4(vTexCoord, 1.0, 1.0);
 
 	vec3 N = normalize(vNormal);
 	mat3 TBN = calculateTBN(N, vWorldPos, texCoord);

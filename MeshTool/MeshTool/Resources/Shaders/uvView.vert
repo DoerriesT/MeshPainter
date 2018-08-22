@@ -9,7 +9,6 @@ out vec2 vTexCoord;
 void main()
 {	
 	vTexCoord = aTexCoord;
-	vTexCoord.y = 1.0 - vTexCoord.y;
 
     gl_Position = vec4(aTexCoord * 2.0 - 1.0, 0.0, 1.0);
 }

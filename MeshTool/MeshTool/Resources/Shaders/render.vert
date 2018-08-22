@@ -17,7 +17,6 @@ void main()
 {
 	// Support for texture atlas, update texture coordinates
     vTexCoord = aTexCoords.xy * uAtlasData.xy + uAtlasData.zw;
-	vTexCoord.y = 1.0 - vTexCoord.y;
 
 	vNormal = mat3(uModelMatrix) * aNormal;
 	vec4 pos  = uModelMatrix * vec4(aPosition, 1.0);

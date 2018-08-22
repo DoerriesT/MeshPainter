@@ -1,6 +1,9 @@
 #include "Utility.h"
 #include <fstream>
 #include <cassert>
+#include <chrono>
+#include <sstream>
+#include <iomanip>
 #include <GLFunctions.h>
 
 std::vector<char> Utility::readTextFile(const std::string & _filename)
@@ -52,6 +55,19 @@ std::vector<std::string> Utility::split(const std::string & str, const std::stri
 std::string Utility::getPathFileExtension(const std::string & filePath)
 {
 	return split(filePath, ".").back();
+}
+
+std::string Utility::getFormatedTime()
+{
+	auto now = std::chrono::system_clock::now();
+	auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+	struct tm buf;
+	localtime_s(&buf, &in_time_t);
+
+	std::stringstream ss;
+	ss << std::put_time(&buf, "%Y-%m-%d-%H-%M-%S");
+	return ss.str();
 }
 
 void Utility::glErrorCheck()

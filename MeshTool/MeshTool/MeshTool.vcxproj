@@ -136,6 +136,7 @@
     <ClCompile Include="Code\ShaderProgram.cpp" />
     <ClCompile Include="Code\stb_image.cpp" />
     <ClCompile Include="Code\stb_image_resize.cpp" />
+    <ClCompile Include="Code\stb_image_write.cpp" />
     <ClCompile Include="Code\Texture.cpp" />
     <ClCompile Include="Code\Uniform.cpp" />
     <ClCompile Include="Code\Utility.cpp" />

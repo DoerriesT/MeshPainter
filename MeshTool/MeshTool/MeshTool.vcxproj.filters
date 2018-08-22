@@ -93,6 +93,9 @@
     <ClCompile Include="Code\Uniform.cpp">
       <Filter>Code\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Code\stb_image_write.cpp">
+      <Filter>Code\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Code\MeshTool.h">

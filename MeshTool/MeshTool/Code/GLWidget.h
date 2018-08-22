@@ -32,11 +32,14 @@ public:
 	void setTextureMode(TextureMode _textureMode);
 	void setPaintColor(const glm::vec3 &_paintColor);
 	void setStrokeWidth(float _strokeWidth);
+	void setTexture(const std::string &_filepath, TextureMode _textureType);
 	float getStrokeWidth() const;
 	glm::vec3 getPaintColor() const;
 	void clearActiveTexture(const glm::vec3 &_clearColor);
 	void clearAllTextures();
 	void centerCamera();
+	void saveTexture(const std::string &_filepath, TextureMode _textureType);
+	void saveAllTextures(const std::string &_filepath);
 	Material *material;
 
 protected:

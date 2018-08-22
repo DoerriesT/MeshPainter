@@ -83,6 +83,129 @@ void MeshTool::on_actionUvView_toggled(bool _enabled)
 	}
 }
 
+void MeshTool::on_actionOpenAlbedoTexture_triggered()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Albedo Texture"), "", tr("PNG (*.png);;DirectDrawSurface (*.dds)"));
+	if (!fileName.isEmpty())
+	{
+		openGLWidget->setTexture(fileName.toLatin1().data(), TextureMode::ALBEDO);
+		openGLWidget->update();
+	}
+}
+
+void MeshTool::on_actionOpenMetallicTexture_triggered()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Albedo Texture"), "", tr("PNG (*.png);;DirectDrawSurface (*.dds)"));
+	if (!fileName.isEmpty())
+	{
+		openGLWidget->setTexture(fileName.toLatin1().data(), TextureMode::METALLIC);
+		openGLWidget->update();
+	}
+}
+
+void MeshTool::on_actionOpenRoughnessTexture_triggered()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Roughness Texture"), "", tr("PNG (*.png);;DirectDrawSurface (*.dds)"));
+	if (!fileName.isEmpty())
+	{
+		openGLWidget->setTexture(fileName.toLatin1().data(), TextureMode::ROUGHNESS);
+		openGLWidget->update();
+	}
+}
+
+void MeshTool::on_actionOpenAmbientOcclusionTexture_triggered()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Ambient Occlusion Texture"), "", tr("PNG (*.png);;DirectDrawSurface (*.dds)"));
+	if (!fileName.isEmpty())
+	{
+		openGLWidget->setTexture(fileName.toLatin1().data(), TextureMode::AMBIENT_OCCLUSION);
+		openGLWidget->update();
+	}
+}
+
+void MeshTool::on_actionOpenEmissiveTexture_triggered()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Emissive Texture"), "", tr("PNG (*.png);;DirectDrawSurface (*.dds)"));
+	if (!fileName.isEmpty())
+	{
+		openGLWidget->setTexture(fileName.toLatin1().data(), TextureMode::EMISSIVE);
+		openGLWidget->update();
+	}
+}
+
+void MeshTool::on_actionOpenDisplacementTexture_triggered()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Displacement Texture"), "", tr("PNG (*.png);;DirectDrawSurface (*.dds)"));
+	if (!fileName.isEmpty())
+	{
+		openGLWidget->setTexture(fileName.toLatin1().data(), TextureMode::DISPLACEMENT);
+		openGLWidget->update();
+	}
+}
+
+void MeshTool::on_actionSaveAlbedoTexture_triggered()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Albedo Texture"), "", tr("PNG (*.png)"));
+	if (!fileName.isEmpty())
+	{
+		openGLWidget->saveTexture(fileName.toLatin1().data(), TextureMode::ALBEDO);
+	}
+}
+
+void MeshTool::on_actionSaveMetallicTexture_triggered()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Metallic Texture"), "", tr("PNG (*.png)"));
+	if (!fileName.isEmpty())
+	{
+		openGLWidget->saveTexture(fileName.toLatin1().data(), TextureMode::METALLIC);
+	}
+}
+
+void MeshTool::on_actionSaveRoughnessTexture_triggered()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Roughness Texture"), "", tr("PNG (*.png)"));
+	if (!fileName.isEmpty())
+	{
+		openGLWidget->saveTexture(fileName.toLatin1().data(), TextureMode::ROUGHNESS);
+	}
+}
+
+void MeshTool::on_actionSaveAmbientOcclusionTexture_triggered()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Ambient Occlusion Texture"), "", tr("PNG (*.png)"));
+	if (!fileName.isEmpty())
+	{
+		openGLWidget->saveTexture(fileName.toLatin1().data(), TextureMode::AMBIENT_OCCLUSION);
+	}
+}
+
+void MeshTool::on_actionSaveEmissiveTexture_triggered()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Emissive Texture"), "", tr("PNG (*.png)"));
+	if (!fileName.isEmpty())
+	{
+		openGLWidget->saveTexture(fileName.toLatin1().data(), TextureMode::EMISSIVE);
+	}
+}
+
+void MeshTool::on_actionSaveDisplacementTexture_triggered()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Displacement Texture"), "", tr("PNG (*.png)"));
+	if (!fileName.isEmpty())
+	{
+		openGLWidget->saveTexture(fileName.toLatin1().data(), TextureMode::DISPLACEMENT);
+	}
+}
+
+void MeshTool::on_actionSaveAllTextures_triggered()
+{
+	QString directoryName = QFileDialog::getExistingDirectory(this, tr("Save All Textures"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	if (!directoryName.isEmpty())
+	{
+		openGLWidget->saveAllTextures(directoryName.toLatin1().data());
+	}
+}
+
 void MeshTool::on_actionActivateAlbedoTexture_toggled(bool _enabled)
 {
 	if (_enabled)

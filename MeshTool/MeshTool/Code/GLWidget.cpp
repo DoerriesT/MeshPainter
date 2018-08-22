@@ -6,6 +6,8 @@
 #include <QMouseEvent>
 #include "Texture.h"
 #include <iostream>
+#define STBI_MSC_SECURE_CRT
+#include <stb_image_write.h>
 
 GLWidget::GLWidget(QWidget *parent)
 	: QOpenGLWidget(parent),
@@ -63,6 +65,40 @@ void GLWidget::setPaintColor(const glm::vec3 &_paintColor)
 void GLWidget::setStrokeWidth(float _strokeWidth)
 {
 	strokeWidth = _strokeWidth;
+}
+
+void GLWidget::setTexture(const std::string & _filepath, TextureMode _textureType)
+{
+	makeCurrent();
+
+	std::shared_ptr<Texture> tex = Texture::createTexture(_filepath, true);
+
+	if (tex->getTarget() != GL_TEXTURE_2D)
+	{
+		return;
+	}
+
+	funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
+
+	TextureMode prevTextureMode = textureMode;
+	setTextureMode(_textureType);
+
+	funcs->glViewport(0, 0, paintTextureWidth, paintTextureHeight);
+	blitShader->bind();
+
+	funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getCurrentPaintTexture(), 0);
+
+	funcs->glBindVertexArray(triangleVAO);
+	funcs->glEnableVertexAttribArray(0);
+
+	funcs->glActiveTexture(GL_TEXTURE15);
+	funcs->glBindTexture(GL_TEXTURE_2D, tex->getId());
+
+	funcs->glDrawArrays(GL_TRIANGLES, 0, 3);
+	
+	funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	textureMode = prevTextureMode;
 }
 
 float GLWidget::getStrokeWidth() const
@@ -147,6 +183,40 @@ void GLWidget::centerCamera()
 	cameraController.centerCamera();
 }
 
+void GLWidget::saveTexture(const std::string &_filepath, TextureMode _textureType)
+{
+	makeCurrent();
+
+	unsigned char *textureData = new unsigned char[paintTextureWidth * paintTextureHeight * 4];
+
+	TextureMode prevTextureMode = textureMode;
+	setTextureMode(_textureType);
+
+	funcs->glActiveTexture(GL_TEXTURE0);
+	funcs->glBindTexture(GL_TEXTURE_2D, getCurrentPaintTexture());
+
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+
+	stbi_flip_vertically_on_write(false);
+	stbi_write_png(_filepath.c_str(), paintTextureWidth, paintTextureHeight, 4, textureData, 0);
+
+	delete[] textureData;
+
+	setTextureMode(prevTextureMode);
+}
+
+void GLWidget::saveAllTextures(const std::string &_filepath)
+{
+	std::string formattedTime = Utility::getFormatedTime();
+
+	saveTexture(_filepath + "/" + formattedTime + "_albedo.png", TextureMode::ALBEDO);
+	saveTexture(_filepath + "/" + formattedTime + "_metallic.png", TextureMode::METALLIC);
+	saveTexture(_filepath + "/" + formattedTime + "_roughness.png", TextureMode::ROUGHNESS);
+	saveTexture(_filepath + "/" + formattedTime + "_ambient_occlusion.png", TextureMode::AMBIENT_OCCLUSION);
+	saveTexture(_filepath + "/" + formattedTime + "_emissive.png", TextureMode::EMISSIVE);
+	saveTexture(_filepath + "/" + formattedTime + "_displacement.png", TextureMode::DISPLACEMENT);
+}
+
 void GLWidget::initializeGL()
 {
 	funcs = getGLFunctions();
@@ -193,6 +263,29 @@ void GLWidget::initializeGL()
 		funcs->glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
 		funcs->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO);
 		funcs->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		// vertex positions
+		funcs->glEnableVertexAttribArray(0);
+		funcs->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+
+		funcs->glBindVertexArray(0);
+	}
+
+	// triangle
+	{
+		glm::vec3 positions[] =
+		{
+			{ -1.0f, -1.0f, 0.0f },
+			{ 3.0f, -1.0f, 0.0f },
+			{ -1.0f, 3.0f, 0.0f }
+		};
+
+		// create buffers/arrays
+		funcs->glGenVertexArrays(1, &triangleVAO);
+		funcs->glGenBuffers(1, &triangleVBO);
+		funcs->glBindVertexArray(triangleVAO);
+		funcs->glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+		funcs->glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
 
 		// vertex positions
 		funcs->glEnableVertexAttribArray(0);
@@ -334,6 +427,7 @@ void GLWidget::initializeGL()
 	paintShader = ShaderProgram::createShaderProgram("Resources/Shaders/paint.vert", "Resources/Shaders/paint.frag");
 	renderShader = ShaderProgram::createShaderProgram("Resources/Shaders/render.vert", "Resources/Shaders/render.frag");
 	textureShader = ShaderProgram::createShaderProgram("Resources/Shaders/texture.vert", "Resources/Shaders/texture.frag");
+	blitShader = ShaderProgram::createShaderProgram("Resources/Shaders/blit.vert", "Resources/Shaders/blit.frag");
 
 	uModelViewProjection.create(defaultShader);
 	uModel.create(defaultShader);
@@ -426,7 +520,7 @@ void GLWidget::paintGL()
 			prevMouseCoord = mouseCoord;
 
 			paintShader->bind();
-			uColorP.set(paintColor);
+			uColorP.set((textureMode == TextureMode::ALBEDO || textureMode == TextureMode::EMISSIVE) ? paintColor : glm::vec3(glm::dot(paintColor, {0.2126f, 0.7152f, 0.0722f})));
 			Utility::glErrorCheck();
 			funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
 			funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, currentPaintTexture, 0);
@@ -444,7 +538,7 @@ void GLWidget::paintGL()
 				// valid paint coord
 				if (data.b > 0)
 				{
-					glm::vec2 paintCoord(data.x, 1.0f - data.y);
+					glm::vec2 paintCoord(data.x, data.y);
 
 					glm::mat4 transform = glm::translate(glm::mat4(), glm::vec3(paintCoord * 2.0f - 1.0f, 0.0f))
 						* glm::scale(glm::mat4(), glm::vec3((1.0f / paintTextureWidth) * strokeWidth, (1.0f / paintTextureHeight) * strokeWidth, 1.0f));

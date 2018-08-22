@@ -22,5 +22,5 @@ void main()
 	{
 		oFragColor = texColor;
 	}
-	oUv = vec4(vTexCoord.x, 1.0 - vTexCoord.y, 1.0, 1.0);
+	oUv = vec4(vTexCoord, 1.0, 1.0);
 }
