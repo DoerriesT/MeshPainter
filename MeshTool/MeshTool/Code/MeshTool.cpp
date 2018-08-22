@@ -7,7 +7,6 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include "Texture.h"
-#include "HalfEdgeMesh.h"
 
 float test;
 
@@ -320,14 +319,14 @@ void MeshTool::on_actionClearAll_triggered()
 
 void MeshTool::on_actionSetEmissiveColor_triggered()
 {
-	glm::vec3 prevColor = openGLWidget->material->getEmissive() * 255.0f;
+	glm::vec3 prevColor = openGLWidget->getMaterial()->getEmissive() * 255.0f;
 	QColorDialog colorDialog({ int(prevColor.r), int(prevColor.g), int(prevColor.b) }, this);
 	if (colorDialog.exec())
 	{
 		QColor qcolor = colorDialog.currentColor();
 		double r, g, b;
 		qcolor.getRgbF(&r, &g, &b);
-		openGLWidget->material->setEmissive({ r, g, b });
+		openGLWidget->getMaterial()->setEmissive({ r, g, b });
 		openGLWidget->update();
 	}
 }
@@ -367,6 +366,7 @@ void MeshTool::on_actionOpen_triggered()
 				// the GLMesh created in GLWidget holds a copy of indexedMesh, so delete this instance
 				delete indexedMesh;
 
+				meshTool->openGLWidget->clearAllTextures();
 				meshTool->openGLWidget->update();
 
 				// acquire lock to signal that mesh loading is done

@@ -33,14 +33,14 @@ public:
 	void setPaintColor(const glm::vec3 &_paintColor);
 	void setStrokeWidth(float _strokeWidth);
 	void setTexture(const std::string &_filepath, TextureMode _textureType);
-	float getStrokeWidth() const;
-	glm::vec3 getPaintColor() const;
 	void clearActiveTexture(const glm::vec3 &_clearColor);
 	void clearAllTextures();
 	void centerCamera();
 	void saveTexture(const std::string &_filepath, TextureMode _textureType);
 	void saveAllTextures(const std::string &_filepath);
-	Material *material;
+	float getStrokeWidth() const;
+	glm::vec3 getPaintColor() const;
+	Material *getMaterial();
 
 protected:
 	void initializeGL() override;
@@ -51,7 +51,7 @@ protected:
 	void wheelEvent(QWheelEvent *_event) override;
 
 private:
-	QOpenGLFunctions_3_3_Core * funcs;
+	QOpenGLFunctions_3_3_Core *funcs;
 
 	int width;
 	int height;
@@ -63,6 +63,7 @@ private:
 	ArcBallCameraController cameraController;
 
 	std::shared_ptr<GLMesh> mesh;
+	Material *material;
 
 	GLuint gridVAO;
 	GLuint gridVBO;

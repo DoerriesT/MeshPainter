@@ -51,9 +51,6 @@
     <ClCompile Include="Code\Utility.cpp">
       <Filter>Code</Filter>
     </ClCompile>
-    <ClCompile Include="Code\HalfEdgeMesh.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
     <ClCompile Include="Code\MeshTool.cpp">
       <Filter>Code\UI</Filter>
     </ClCompile>
@@ -107,9 +104,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Utility.h">
-      <Filter>Code</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\HalfEdgeMesh.h">
       <Filter>Code</Filter>
     </ClInclude>
     <ClInclude Include="Code\ArcBallCameraController.h">

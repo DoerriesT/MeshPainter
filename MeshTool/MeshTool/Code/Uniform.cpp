@@ -1,5 +1,4 @@
 #include "Uniform.h"
-#include "Texture.h"
 
 UniformMaterial::UniformMaterial(const std::string &_name)
 	:albedo(_name + ".albedo"),
@@ -7,7 +6,6 @@ UniformMaterial::UniformMaterial(const std::string &_name)
 	roughness(_name + ".roughness"),
 	emissive(_name + ".emissive"),
 	mapBitField(_name + ".mapBitField"),
-	displacement(_name + ".displacement"),
 	name(_name),
 	firstTime(true)
 {
@@ -21,7 +19,6 @@ void UniformMaterial::create(const std::shared_ptr<ShaderProgram> &_shaderProgra
 	roughness.create(shaderProgram);
 	emissive.create(shaderProgram);
 	mapBitField.create(shaderProgram);
-	displacement.create(shaderProgram);
 }
 
 void UniformMaterial::set(const Material *_value)
@@ -31,8 +28,6 @@ void UniformMaterial::set(const Material *_value)
 	roughness.set(_value->getRoughness());
 	emissive.set(_value->getEmissive());
 	mapBitField.set(_value->getMapBitField());
-	std::shared_ptr<Texture> displacementMap = _value->getDisplacementMap();
-	displacement.set(displacementMap != nullptr);
 }
 
 bool UniformMaterial::isValid()
@@ -41,6 +36,5 @@ bool UniformMaterial::isValid()
 		metallic.isValid() &&
 		roughness.isValid() &&
 		emissive.isValid() &&
-		mapBitField.isValid() &&
-		displacement.isValid();
+		mapBitField.isValid();
 }

@@ -101,16 +101,6 @@ void GLWidget::setTexture(const std::string & _filepath, TextureMode _textureTyp
 	textureMode = prevTextureMode;
 }
 
-float GLWidget::getStrokeWidth() const
-{
-	return strokeWidth;
-}
-
-glm::vec3 GLWidget::getPaintColor() const
-{
-	return paintColor;
-}
-
 void GLWidget::clearActiveTexture(const glm::vec3 &_clearColor)
 {
 	makeCurrent();
@@ -215,6 +205,21 @@ void GLWidget::saveAllTextures(const std::string &_filepath)
 	saveTexture(_filepath + "/" + formattedTime + "_ambient_occlusion.png", TextureMode::AMBIENT_OCCLUSION);
 	saveTexture(_filepath + "/" + formattedTime + "_emissive.png", TextureMode::EMISSIVE);
 	saveTexture(_filepath + "/" + formattedTime + "_displacement.png", TextureMode::DISPLACEMENT);
+}
+
+float GLWidget::getStrokeWidth() const
+{
+	return strokeWidth;
+}
+
+glm::vec3 GLWidget::getPaintColor() const
+{
+	return paintColor;
+}
+
+Material *GLWidget::getMaterial()
+{
+	return material;
 }
 
 void GLWidget::initializeGL()

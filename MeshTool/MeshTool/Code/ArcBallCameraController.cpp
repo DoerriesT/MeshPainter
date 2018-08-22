@@ -22,7 +22,10 @@ void ArcBallCameraController::update(const glm::vec2 &_mouseDelta, float _scroll
 	}
 	else
 	{
-		camera->rotate(glm::vec3(_mouseDelta.y * MOUSE_DELTA_MULT, _mouseDelta.x * MOUSE_DELTA_MULT, 0.0f));
+		float pitch = _mouseDelta.y * MOUSE_DELTA_MULT;
+		float camY = camera->getForwardDirection().y;
+		pitch = glm::clamp(pitch - camY, -1.0f, 1.0f) + camY;
+		camera->rotate(glm::vec3(pitch, _mouseDelta.x * MOUSE_DELTA_MULT, 0.0f));
 	}
 
 	camera->setPosition(center - camera->getForwardDirection() * distance);

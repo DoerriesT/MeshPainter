@@ -16,6 +16,7 @@ public:
 	static const std::uint32_t ROUGHNESS;
 	static const std::uint32_t AO;
 	static const std::uint32_t EMISSIVE;
+	static const std::uint32_t DISPLACEMENT;
 
 	explicit Material(const glm::vec4 &_albedo = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), float _metallic = 0.0f, float _roughness = 0.0f, const glm::vec3 &_emissive = glm::vec3(0.0f));
 	explicit Material(const std::shared_ptr<Texture> &_albedoMap,
@@ -64,5 +65,4 @@ private:
 	std::shared_ptr<Texture> aoMap;
 	std::shared_ptr<Texture> emissiveMap;
 	std::shared_ptr<Texture> displacementMap;
-	std::uint32_t mapBitField;
 };

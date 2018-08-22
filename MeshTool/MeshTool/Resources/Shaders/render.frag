@@ -7,6 +7,7 @@ const int METALLIC = 4;
 const int ROUGHNESS = 8;
 const int AO = 16;
 const int EMISSIVE = 32;
+const int DISPLACEMENT = 64;
 
 const float EXPOSURE = 16.0;
 
@@ -24,7 +25,6 @@ struct Material
     float roughness;
 	vec3 emissive;
     int mapBitField;
-	bool displacement;
 };
 
 layout(binding = 0) uniform sampler2D albedoMap;
@@ -122,7 +122,7 @@ void main()
 	vec3 N = normalize(vNormal);
 	mat3 TBN = calculateTBN(N, vWorldPos, texCoord);
 
-	if(uMaterial.displacement)
+	if((uMaterial.mapBitField & DISPLACEMENT) == DISPLACEMENT)
 	{
 		const float heightScale = 0.05;
 	

@@ -127,7 +127,6 @@
     <ClCompile Include="Code\Camera.cpp" />
     <ClCompile Include="Code\GLFunctions.cpp" />
     <ClCompile Include="Code\GLWidget.cpp" />
-    <ClCompile Include="Code\HalfEdgeMesh.cpp" />
     <ClCompile Include="Code\main.cpp" />
     <ClCompile Include="Code\Material.cpp" />
     <ClCompile Include="Code\Mesh.cpp" />
@@ -151,7 +150,6 @@
     <ClInclude Include="Code\ArcBallCameraController.h" />
     <ClInclude Include="Code\Camera.h" />
     <ClInclude Include="Code\GLFunctions.h" />
-    <ClInclude Include="Code\HalfEdgeMesh.h" />
     <ClInclude Include="Code\Material.h" />
     <ClInclude Include="Code\Mesh.h" />
     <QtMoc Include="Code\MeshTool.h">

@@ -69,7 +69,6 @@ private:
 	Uniform<GLfloat> roughness;
 	Uniform<glm::vec3> emissive;
 	Uniform<GLint> mapBitField;
-	Uniform<GLboolean> displacement;
 	std::string name;
 	bool firstTime;
 };
