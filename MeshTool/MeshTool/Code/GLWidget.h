@@ -89,6 +89,8 @@ private:
 	float strokeWidth;
 	bool restart;
 	bool paint;
+	float uvZoom;
+	glm::vec2 uvTranslate;
 
 	std::shared_ptr<ShaderProgram> defaultShader;
 	std::shared_ptr<ShaderProgram> gridShader;
@@ -124,6 +126,7 @@ private:
 	Uniform<glm::mat4> uModelViewProjectionT = Uniform<glm::mat4>("uModelViewProjection");
 
 	Uniform<GLboolean> uGridModeU = Uniform<GLboolean>("uGridMode");
+	Uniform<glm::mat3> uTransformationU = Uniform<glm::mat3>("uTransformation");
 
 	void createAttachments(int _width, int _height);
 	std::shared_ptr<Texture> createTexture(int _width, int _height);

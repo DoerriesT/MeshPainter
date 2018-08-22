@@ -201,6 +201,11 @@ void ShaderProgram::setUniform(const GLint &_location, const GLfloat &_value) co
 	funcs->glUniform1f(_location, _value);
 }
 
+void ShaderProgram::setUniform(const GLint &_location, const glm::mat2 &_value) const
+{
+	funcs->glUniformMatrix2fv(_location, 1, GL_FALSE, glm::value_ptr(_value));
+}
+
 void ShaderProgram::setUniform(const GLint &_location, const glm::mat3 &_value) const
 {
 	funcs->glUniformMatrix3fv(_location, 1, GL_FALSE, glm::value_ptr(_value));

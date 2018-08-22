@@ -19,8 +19,10 @@ GLWidget::GLWidget(QWidget *parent)
 	strokeWidth(5.0f),
 	viewMode(ViewMode::DEFAULT),
 	textureMode(TextureMode::ALBEDO),
-	paintTextureWidth(1024),
-	paintTextureHeight(1024)
+	paintTextureWidth(4096),
+	paintTextureHeight(4096),
+	uvZoom(1.0f),
+	uvTranslate(0.0f, 1.0)
 {
 	setMouseTracking(true);
 }
@@ -456,6 +458,7 @@ void GLWidget::initializeGL()
 	uModelViewProjectionT.create(textureShader);
 
 	uGridModeU.create(uvShader);
+	uTransformationU.create(uvShader);
 
 	funcs->glGenFramebuffers(1, &fbo);
 	funcs->glGenFramebuffers(1, &paintFbo);
@@ -649,6 +652,22 @@ void GLWidget::paintGL()
 
 			mesh->enableVertexAttribArrays();
 
+			glm::mat3 scale =
+			{
+				uvZoom, 0.0f, 0.0f,
+				0.0f, uvZoom, 0.0f,
+				0.0f, 0.0f, 1.0f
+			};
+
+			glm::mat3 translate =
+			{
+				1.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f,
+				uvTranslate.x, 1.0 - uvTranslate.y, 1.0f
+			};
+
+			uTransformationU.set(translate * scale);
+
 			uGridModeU.set(false);
 			mesh->render();
 			uGridModeU.set(true);
@@ -717,26 +736,34 @@ void GLWidget::mouseMoveEvent(QMouseEvent * _event)
 
 	QPoint currentPosQ = _event->pos();
 	glm::vec2 currentPos = glm::vec2(currentPosQ.x(), currentPosQ.y());
-	static glm::vec2 prevPos;
-	glm::vec2 delta = currentPos - prevPos;
+	glm::vec2 delta = currentPos - mouseCoord;
 	delta.y *= width / float(height);
-	prevPos = currentPos;
+	mouseCoord = currentPos;
 
-	if (buttons.testFlag(Qt::RightButton))
+	if (viewMode != ViewMode::UV)
 	{
-		cameraController.update(delta, 0.0f, false);
-		update();
+		if (buttons.testFlag(Qt::RightButton))
+		{
+			cameraController.update(delta, 0.0f, false);
+			update();
+		}
+		if (buttons.testFlag(Qt::MiddleButton))
+		{
+			cameraController.update(delta, 0.0f, true);
+			update();
+		}
 	}
-	if (buttons.testFlag(Qt::MiddleButton))
+	else
 	{
-		cameraController.update(delta, 0.0f, true);
-		update();
+		if (buttons.testFlag(Qt::RightButton))
+		{
+			uvTranslate += delta / float(width);
+			update();
+		}
 	}
 	if (buttons.testFlag(Qt::LeftButton))
 	{
 		paint = true;
-		mouseCoord = currentPos;
-		//paintColor = glm::vec3(1.0, 0.0, 0.0);
 		update();
 	}
 }
@@ -745,24 +772,29 @@ void GLWidget::mousePressEvent(QMouseEvent * _event)
 {
 	Qt::MouseButtons buttons = _event->buttons();
 	QPoint currentPosQ = _event->pos();
-
-	static int c = 0;
-	glm::vec3 colors[] = { {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f} };
+	mouseCoord = glm::vec2(currentPosQ.x(), currentPosQ.y());
 
 	if (buttons.testFlag(Qt::LeftButton) && !buttons.testFlag(Qt::RightButton))
 	{
 		restart = true;
 		paint = true;
-		mouseCoord = glm::vec2(currentPosQ.x(), currentPosQ.y());
-		//paintColor = colors[c++ % 3];
 		update();
 	}
 }
 
 void GLWidget::wheelEvent(QWheelEvent *_event)
 {
-	cameraController.update(glm::vec2(0.0f), _event->angleDelta().y(), false);
-	update();
+	if (viewMode != ViewMode::UV)
+	{
+		cameraController.update(glm::vec2(0.0f), _event->angleDelta().y(), false);
+		update();
+	}
+	else
+	{
+		const float SCROLL_DELTA_MULT = 0.001f;
+		uvZoom += _event->angleDelta().y() * SCROLL_DELTA_MULT;
+		update();
+	}
 }
 
 void GLWidget::createAttachments(int _width, int _height)

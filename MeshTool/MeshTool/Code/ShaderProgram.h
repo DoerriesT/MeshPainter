@@ -27,6 +27,7 @@ public:
 	void setUniform(const GLint &_location, const GLint &_value) const;
 	void setUniform(const GLint &_location, GLuint _value) const;
 	void setUniform(const GLint &_location, const GLfloat &value) const;
+	void setUniform(const GLint &_location, const glm::mat2 &_value) const;
 	void setUniform(const GLint &_location, const glm::mat3 &_value) const;
 	void setUniform(const GLint &_location, const glm::mat4 &_value) const;
 	void setUniform(const GLint &_location, const glm::vec2 &_value) const;
