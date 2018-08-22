@@ -3,7 +3,7 @@
 out vec4 oFragColor;
 in vec2 vTexCoord;
 
-layout(binding=15) uniform sampler2D uSourceTexture;
+uniform sampler2D uSourceTexture;
 
 void main()
 {

@@ -5,7 +5,7 @@ const float PI = 3.14159265359;
 layout(location = 0) out vec4 oFragColor;
 layout(location = 1) out vec4 oUv;
 
-layout(binding = 0) uniform sampler2D uTexture;
+uniform sampler2D uTexture;
 
 in vec2 vTexCoord;
 

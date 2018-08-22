@@ -27,16 +27,16 @@ struct Material
     int mapBitField;
 };
 
-layout(binding = 0) uniform sampler2D albedoMap;
-layout(binding = 1) uniform sampler2D normalMap;
-layout(binding = 2) uniform sampler2D metallicMap;
-layout(binding = 3) uniform sampler2D roughnessMap;
-layout(binding = 4) uniform sampler2D aoMap;
-layout(binding = 5) uniform sampler2D emissiveMap;
-layout(binding = 6) uniform sampler2D uDisplacementMap;
-layout(binding = 7) uniform samplerCube uIrradianceMap;
-layout(binding = 8) uniform samplerCube uPrefilterMap;
-layout(binding = 9) uniform sampler2D uBrdfLUT;
+uniform sampler2D albedoMap;
+uniform sampler2D normalMap;
+uniform sampler2D metallicMap;
+uniform sampler2D roughnessMap;
+uniform sampler2D aoMap;
+uniform sampler2D emissiveMap;
+uniform sampler2D uDisplacementMap;
+uniform samplerCube uIrradianceMap;
+uniform samplerCube uPrefilterMap;
+uniform sampler2D uBrdfLUT;
 
 uniform Material uMaterial;
 uniform vec3 uLightColor;

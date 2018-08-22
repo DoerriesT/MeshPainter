@@ -87,6 +87,7 @@ void GLWidget::setTexture(const std::string & _filepath, TextureMode _textureTyp
 
 	funcs->glViewport(0, 0, paintTextureWidth, paintTextureHeight);
 	blitShader->bind();
+	uSourceTextureB.set(15);
 
 	funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getCurrentPaintTexture(), 0);
 
@@ -451,14 +452,27 @@ void GLWidget::initializeGL()
 	uLightColorR.create(renderShader);
 	uLightDirectionR.create(renderShader);
 	uCamPosR.create(renderShader);
+	albedoMapR.create(renderShader);
+	metallicMapR.create(renderShader);
+	roughnessMapR.create(renderShader);
+	aoMapR.create(renderShader);
+	emissiveMapR.create(renderShader);
+	uDisplacementMapR.create(renderShader);
+	uIrradianceMapR.create(renderShader);
+	uPrefilterMapR.create(renderShader);
+	uBrdfLUTR.create(renderShader);
 
 	uTransformationP.create(paintShader);
 	uColorP.create(paintShader);
 
 	uModelViewProjectionT.create(textureShader);
+	uTextureT.create(textureShader);
 
 	uGridModeU.create(uvShader);
 	uTransformationU.create(uvShader);
+	uTextureU.create(uvShader);
+
+	uSourceTextureB.create(blitShader);
 
 	funcs->glGenFramebuffers(1, &fbo);
 	funcs->glGenFramebuffers(1, &paintFbo);
@@ -606,6 +620,7 @@ void GLWidget::paintGL()
 			textureShader->bind();
 
 			uModelViewProjectionT.set(projection * camera->getViewMatrix());
+			uTextureT.set(0);
 
 			GLuint currentPaintTexture = getCurrentPaintTexture();
 
@@ -627,6 +642,15 @@ void GLWidget::paintGL()
 			uLightColorR.set(glm::vec3(1.0f));
 			uLightDirectionR.set(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
 			uCamPosR.set(camera->getPosition());
+			albedoMapR.set(0);
+			metallicMapR.set(2);
+			roughnessMapR.set(3);
+			aoMapR.set(4);
+			emissiveMapR.set(5);
+			uDisplacementMapR.set(6);
+			uIrradianceMapR.set(7);
+			uPrefilterMapR.set(8);
+			uBrdfLUTR.set(9);
 
 			material->bindTextures();
 
@@ -667,6 +691,7 @@ void GLWidget::paintGL()
 			};
 
 			uTransformationU.set(translate * scale);
+			uTextureU.set(0);
 
 			uGridModeU.set(false);
 			mesh->render();

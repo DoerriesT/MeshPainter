@@ -117,6 +117,15 @@ private:
 	Uniform<glm::vec3> uLightColorR = Uniform<glm::vec3>("uLightColor");
 	Uniform<glm::vec3> uLightDirectionR = Uniform<glm::vec3>("uLightDirection");
 	Uniform<glm::vec3> uCamPosR = Uniform<glm::vec3>("uCamPos");
+	Uniform<GLint> albedoMapR = Uniform<GLint>("albedoMap");
+	Uniform<GLint> metallicMapR = Uniform<GLint>("metallicMap");
+	Uniform<GLint> roughnessMapR = Uniform<GLint>("roughnessMap");
+	Uniform<GLint> aoMapR = Uniform<GLint>("aoMap");
+	Uniform<GLint> emissiveMapR = Uniform<GLint>("emissiveMap");
+	Uniform<GLint> uDisplacementMapR = Uniform<GLint>("uDisplacementMap");
+	Uniform<GLint> uIrradianceMapR = Uniform<GLint>("uIrradianceMap");
+	Uniform<GLint> uPrefilterMapR = Uniform<GLint>("uPrefilterMap");
+	Uniform<GLint> uBrdfLUTR = Uniform<GLint>("uBrdfLUT");
 
 	Uniform<glm::mat4> uModelViewProjectionG = Uniform<glm::mat4>("uModelViewProjection");
 
@@ -124,9 +133,13 @@ private:
 	Uniform<glm::vec3> uColorP = Uniform<glm::vec3>("uColor");
 
 	Uniform<glm::mat4> uModelViewProjectionT = Uniform<glm::mat4>("uModelViewProjection");
+	Uniform<GLint> uTextureT = Uniform<GLint>("uTexture");
 
 	Uniform<GLboolean> uGridModeU = Uniform<GLboolean>("uGridMode");
 	Uniform<glm::mat3> uTransformationU = Uniform<glm::mat3>("uTransformation");
+	Uniform<GLint> uTextureU = Uniform<GLint>("uTexture");
+
+	Uniform<GLint> uSourceTextureB = Uniform<GLint>("uSourceTexture");
 
 	void createAttachments(int _width, int _height);
 	std::shared_ptr<Texture> createTexture(int _width, int _height);
