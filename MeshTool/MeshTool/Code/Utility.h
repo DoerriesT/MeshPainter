@@ -9,9 +9,6 @@ namespace Utility
 {
 	std::vector<char> readTextFile(const std::string &_filename);
 
-	std::vector<std::string> split(const std::string &str, const std::string &seperator);
-
-	// this method is not very fast
 	std::string getPathFileExtension(const std::string &filePath);
 
 	std::string getFormatedTime();

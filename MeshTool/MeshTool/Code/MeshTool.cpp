@@ -268,7 +268,7 @@ void MeshTool::on_actionSetStrokeWidth_triggered()
 
 void MeshTool::on_actionSetPaint_triggered()
 {
-	glm::vec3 prevColor = openGLWidget->getPaintColor() * 255.0f;
+	glm::vec3 prevColor = openGLWidget->getPaintColor() * 255.0f; // QColor uses 0 - 255
 	QColorDialog colorDialog({ int(prevColor.r), int(prevColor.g), int(prevColor.b )}, this);
 	if (colorDialog.exec())
 	{
@@ -334,9 +334,7 @@ void MeshTool::on_actionSetEmissiveColor_triggered()
 void MeshTool::on_actionOpen_triggered()
 {
 	// get file path
-	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open Mesh File"), "",
-		tr("Wavefront OBJ File (*.obj)"));
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Mesh File"), "", tr("Wavefront OBJ File (*.obj)"));
 
 	// get lock on bool to check if there is already a loading operation going on
 	std::lock_guard<std::mutex> lockCheck(loadingMeshMutex);
@@ -366,6 +364,7 @@ void MeshTool::on_actionOpen_triggered()
 				// the GLMesh created in GLWidget holds a copy of indexedMesh, so delete this instance
 				delete indexedMesh;
 
+				// reset material textures
 				meshTool->openGLWidget->clearAllTextures();
 				meshTool->openGLWidget->update();
 

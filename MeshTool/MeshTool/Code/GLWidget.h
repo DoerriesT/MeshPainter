@@ -88,7 +88,6 @@ private:
 	glm::vec2 mouseCoord;
 	float strokeWidth;
 	bool restart;
-	bool paint;
 	float uvZoom;
 	glm::vec2 uvTranslate;
 
@@ -143,5 +142,6 @@ private:
 
 	void createAttachments(int _width, int _height);
 	std::shared_ptr<Texture> createTexture(int _width, int _height);
-	GLuint getCurrentPaintTexture();
+	GLuint getPaintTexture(TextureMode _textureMode);
+	void paint();
 };

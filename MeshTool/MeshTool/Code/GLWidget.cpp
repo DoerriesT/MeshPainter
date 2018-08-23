@@ -14,7 +14,6 @@ GLWidget::GLWidget(QWidget *parent)
 	camera(new Camera()),
 	cameraController(camera, glm::vec3(0.0f), 1.0f),
 	wireframe(false),
-	paint(false),
 	restart(true),
 	strokeWidth(5.0f),
 	viewMode(ViewMode::DEFAULT),
@@ -75,49 +74,44 @@ void GLWidget::setTexture(const std::string & _filepath, TextureMode _textureTyp
 
 	std::shared_ptr<Texture> tex = Texture::createTexture(_filepath, true);
 
+	// we only use 2d textures
 	if (tex->getTarget() != GL_TEXTURE_2D)
 	{
 		return;
 	}
 
+	// bind paint fbo and bind the requested texture as attachment
 	funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
-
-	TextureMode prevTextureMode = textureMode;
-	setTextureMode(_textureType);
-
+	funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getPaintTexture(_textureType), 0);
 	funcs->glViewport(0, 0, paintTextureWidth, paintTextureHeight);
+
 	blitShader->bind();
 	uSourceTextureB.set(15);
 
-	funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getCurrentPaintTexture(), 0);
-
+	// bind triangle mesh for fullscreen pass
 	funcs->glBindVertexArray(triangleVAO);
 	funcs->glEnableVertexAttribArray(0);
 
+	// set user selected texture as source texture for blit shader
 	funcs->glActiveTexture(GL_TEXTURE15);
 	funcs->glBindTexture(GL_TEXTURE_2D, tex->getId());
 
+	// fullscreen pass
 	funcs->glDrawArrays(GL_TRIANGLES, 0, 3);
-	
-	funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	textureMode = prevTextureMode;
+	// rebind default fbo
+	funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 }
 
 void GLWidget::clearActiveTexture(const glm::vec3 &_clearColor)
 {
 	makeCurrent();
 
-	GLuint currentPaintTexture = getCurrentPaintTexture();
-
-	if (currentPaintTexture != 0)
-	{
-		funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getCurrentPaintTexture(), 0);
-		funcs->glClearColor(_clearColor.r, _clearColor.g, _clearColor.b, 1.0f);
-		funcs->glClear(GL_COLOR_BUFFER_BIT);
-		funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	}
+	funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
+	funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getPaintTexture(textureMode), 0);
+	funcs->glClearColor(_clearColor.r, _clearColor.g, _clearColor.b, 1.0f);
+	funcs->glClear(GL_COLOR_BUFFER_BIT);
+	funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 }
 
 void GLWidget::clearAllTextures()
@@ -132,7 +126,7 @@ void GLWidget::clearAllTextures()
 		funcs->glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		funcs->glClear(GL_COLOR_BUFFER_BIT);
 	}
-	
+
 	// metallic
 	{
 		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getMetallicMap()->getId(), 0);
@@ -182,11 +176,8 @@ void GLWidget::saveTexture(const std::string &_filepath, TextureMode _textureTyp
 
 	unsigned char *textureData = new unsigned char[paintTextureWidth * paintTextureHeight * 4];
 
-	TextureMode prevTextureMode = textureMode;
-	setTextureMode(_textureType);
-
 	funcs->glActiveTexture(GL_TEXTURE0);
-	funcs->glBindTexture(GL_TEXTURE_2D, getCurrentPaintTexture());
+	funcs->glBindTexture(GL_TEXTURE_2D, getPaintTexture(_textureType));
 
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
 
@@ -194,8 +185,6 @@ void GLWidget::saveTexture(const std::string &_filepath, TextureMode _textureTyp
 	stbi_write_png(_filepath.c_str(), paintTextureWidth, paintTextureHeight, 4, textureData, 0);
 
 	delete[] textureData;
-
-	setTextureMode(prevTextureMode);
 }
 
 void GLWidget::saveAllTextures(const std::string &_filepath)
@@ -227,27 +216,31 @@ Material *GLWidget::getMaterial()
 
 void GLWidget::initializeGL()
 {
+	// get gl functions
 	funcs = getGLFunctions();
 
-	funcs->glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	// setup state
+	{
+		funcs->glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	funcs->glEnable(GL_DEPTH_TEST);
-	funcs->glDepthFunc(GL_LEQUAL);
+		funcs->glEnable(GL_DEPTH_TEST);
+		funcs->glDepthFunc(GL_LEQUAL);
 
-	funcs->glDisable(GL_STENCIL_TEST);
-	funcs->glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	funcs->glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+		funcs->glDisable(GL_STENCIL_TEST);
+		funcs->glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		funcs->glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-	funcs->glDisable(GL_CULL_FACE);
+		funcs->glDisable(GL_CULL_FACE);
 
-	funcs->glDisable(GL_BLEND);
+		funcs->glDisable(GL_BLEND);
 
-	funcs->glLineWidth(1.0f);
-	funcs->glEnable(GL_LINE_SMOOTH);
+		funcs->glLineWidth(1.0f);
+		funcs->glEnable(GL_LINE_SMOOTH);
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	}
 
-	// quad
+	// create quad mesh for painting
 	{
 		glm::vec3 positions[] =
 		{
@@ -279,7 +272,7 @@ void GLWidget::initializeGL()
 		funcs->glBindVertexArray(0);
 	}
 
-	// triangle
+	// create triangle mesh for fullscreen rendering (copy imported texture to paint texture)
 	{
 		glm::vec3 positions[] =
 		{
@@ -302,14 +295,14 @@ void GLWidget::initializeGL()
 		funcs->glBindVertexArray(0);
 	}
 
-	struct GridVertex
+	// create grid mesh
 	{
-		glm::vec3 position;
-		glm::vec3 color;
-	};
+		struct GridVertex
+		{
+			glm::vec3 position;
+			glm::vec3 color;
+		};
 
-	// create grid
-	{
 		GridVertex gridVertices[44];
 
 		for (unsigned int i = 0; i < 11; ++i)
@@ -342,15 +335,19 @@ void GLWidget::initializeGL()
 		funcs->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GridVertex), (void*)offsetof(GridVertex, color));
 
 		funcs->glBindVertexArray(0);
-
-		Utility::glErrorCheck();
 	}
 
-	// create axes
+	// create axes mesh
 	{
-		float arrow = 0.05f;
+		struct AxisVertex
+		{
+			glm::vec3 position;
+			glm::vec3 color;
+		};
 
-		GridVertex axisVertices[] =
+		const float arrow = 0.05f;
+
+		AxisVertex axisVertices[] =
 		{
 			// x axis
 
@@ -418,181 +415,142 @@ void GLWidget::initializeGL()
 
 		// vertex positions
 		funcs->glEnableVertexAttribArray(0);
-		funcs->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GridVertex), (void*)0);
+		funcs->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(AxisVertex), (void*)0);
 
 		// vertex color
 		funcs->glEnableVertexAttribArray(1);
-		funcs->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GridVertex), (void*)offsetof(GridVertex, color));
+		funcs->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(AxisVertex), (void*)offsetof(AxisVertex, color));
 
 		funcs->glBindVertexArray(0);
-
-		Utility::glErrorCheck();
 	}
 
-	defaultShader = ShaderProgram::createShaderProgram("Resources/Shaders/default.vert", "Resources/Shaders/default.frag");
-	gridShader = ShaderProgram::createShaderProgram("Resources/Shaders/grid.vert", "Resources/Shaders/grid.frag");
-	uvShader = ShaderProgram::createShaderProgram("Resources/Shaders/uvView.vert", "Resources/Shaders/uvView.frag");
-	paintShader = ShaderProgram::createShaderProgram("Resources/Shaders/paint.vert", "Resources/Shaders/paint.frag");
-	renderShader = ShaderProgram::createShaderProgram("Resources/Shaders/render.vert", "Resources/Shaders/render.frag");
-	textureShader = ShaderProgram::createShaderProgram("Resources/Shaders/texture.vert", "Resources/Shaders/texture.frag");
-	blitShader = ShaderProgram::createShaderProgram("Resources/Shaders/blit.vert", "Resources/Shaders/blit.frag");
+	// create shaders
+	{
+		defaultShader = ShaderProgram::createShaderProgram("Resources/Shaders/default.vert", "Resources/Shaders/default.frag");
+		gridShader = ShaderProgram::createShaderProgram("Resources/Shaders/grid.vert", "Resources/Shaders/grid.frag");
+		uvShader = ShaderProgram::createShaderProgram("Resources/Shaders/uvView.vert", "Resources/Shaders/uvView.frag");
+		paintShader = ShaderProgram::createShaderProgram("Resources/Shaders/paint.vert", "Resources/Shaders/paint.frag");
+		renderShader = ShaderProgram::createShaderProgram("Resources/Shaders/render.vert", "Resources/Shaders/render.frag");
+		textureShader = ShaderProgram::createShaderProgram("Resources/Shaders/texture.vert", "Resources/Shaders/texture.frag");
+		blitShader = ShaderProgram::createShaderProgram("Resources/Shaders/blit.vert", "Resources/Shaders/blit.frag");
+	}
 
-	uModelViewProjection.create(defaultShader);
-	uModel.create(defaultShader);
-	uCamPos.create(defaultShader);
-	uLineMode.create(defaultShader);
-	uLightDir.create(defaultShader);
+	// create uniforms
+	{
+		// default view mode shader
+		uModelViewProjection.create(defaultShader);
+		uModel.create(defaultShader);
+		uCamPos.create(defaultShader);
+		uLineMode.create(defaultShader);
+		uLightDir.create(defaultShader);
 
-	uModelViewProjectionG.create(gridShader);
+		// grid shader
+		uModelViewProjectionG.create(gridShader);
 
-	uModelViewProjectionMatrixR.create(renderShader);
-	uModelMatrixR.create(renderShader);
-	uAtlasDataR.create(renderShader);
-	uMaterialR.create(renderShader);
-	uLightColorR.create(renderShader);
-	uLightDirectionR.create(renderShader);
-	uCamPosR.create(renderShader);
-	albedoMapR.create(renderShader);
-	metallicMapR.create(renderShader);
-	roughnessMapR.create(renderShader);
-	aoMapR.create(renderShader);
-	emissiveMapR.create(renderShader);
-	uDisplacementMapR.create(renderShader);
-	uIrradianceMapR.create(renderShader);
-	uPrefilterMapR.create(renderShader);
-	uBrdfLUTR.create(renderShader);
+		// render view mode shader
+		uModelViewProjectionMatrixR.create(renderShader);
+		uModelMatrixR.create(renderShader);
+		uAtlasDataR.create(renderShader);
+		uMaterialR.create(renderShader);
+		uLightColorR.create(renderShader);
+		uLightDirectionR.create(renderShader);
+		uCamPosR.create(renderShader);
+		albedoMapR.create(renderShader);
+		metallicMapR.create(renderShader);
+		roughnessMapR.create(renderShader);
+		aoMapR.create(renderShader);
+		emissiveMapR.create(renderShader);
+		uDisplacementMapR.create(renderShader);
+		uIrradianceMapR.create(renderShader);
+		uPrefilterMapR.create(renderShader);
+		uBrdfLUTR.create(renderShader);
 
-	uTransformationP.create(paintShader);
-	uColorP.create(paintShader);
+		// paint shader
+		uTransformationP.create(paintShader);
+		uColorP.create(paintShader);
 
-	uModelViewProjectionT.create(textureShader);
-	uTextureT.create(textureShader);
+		// texture view mode shader
+		uModelViewProjectionT.create(textureShader);
+		uTextureT.create(textureShader);
 
-	uGridModeU.create(uvShader);
-	uTransformationU.create(uvShader);
-	uTextureU.create(uvShader);
+		// uv view mode shader
+		uGridModeU.create(uvShader);
+		uTransformationU.create(uvShader);
+		uTextureU.create(uvShader);
 
-	uSourceTextureB.create(blitShader);
+		// blit shader
+		uSourceTextureB.create(blitShader);
+	}
 
-	funcs->glGenFramebuffers(1, &fbo);
-	funcs->glGenFramebuffers(1, &paintFbo);
+	// create fbos
+	{
+		funcs->glGenFramebuffers(1, &fbo);
+		funcs->glGenFramebuffers(1, &paintFbo);
+	}
 
+	// create dummy attachments. at this point we dont yet know the widget resolution
 	createAttachments(1, 1);
 
+	// initialize the camera controller
 	cameraController.update(glm::vec2(0.0f), 0.0f, false);
 
+	// create a material
 	material = new Material(glm::vec4(1.0));
 
+	// create textures for render view mode image based lighting
 	irradianceTexture = Texture::createTexture("Resources/Textures/irradiance.dds");
 	reflectanceTexture = Texture::createTexture("Resources/Textures/reflectance.dds");
 	brdfLUT = Texture::createTexture("Resources/Textures/brdf.dds");
 
-	funcs->glActiveTexture(GL_TEXTURE7);
-	funcs->glBindTexture(irradianceTexture->getTarget(), irradianceTexture->getId());
-	funcs->glActiveTexture(GL_TEXTURE8);
-	funcs->glBindTexture(reflectanceTexture->getTarget(), reflectanceTexture->getId());
-	funcs->glActiveTexture(GL_TEXTURE9);
-	funcs->glBindTexture(GL_TEXTURE_2D, brdfLUT->getId());
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// bind IBL textures
+	{
+		funcs->glActiveTexture(GL_TEXTURE7);
+		funcs->glBindTexture(irradianceTexture->getTarget(), irradianceTexture->getId());
+		funcs->glActiveTexture(GL_TEXTURE8);
+		funcs->glBindTexture(reflectanceTexture->getTarget(), reflectanceTexture->getId());
+		funcs->glActiveTexture(GL_TEXTURE9);
+		funcs->glBindTexture(GL_TEXTURE_2D, brdfLUT->getId());
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	}
 
-	material->setAlbedoMap(createTexture(paintTextureWidth, paintTextureHeight));
-	material->setMetallicMap(createTexture(paintTextureWidth, paintTextureHeight));
-	material->setRoughnessMap(createTexture(paintTextureWidth, paintTextureHeight));
-	material->setAoMap(createTexture(paintTextureWidth, paintTextureHeight));
-	material->setEmissiveMap(createTexture(paintTextureWidth, paintTextureHeight));
-	material->setDisplacementMap(createTexture(paintTextureWidth, paintTextureHeight));
+	// create and initialize paint textures
+	{
+		material->setAlbedoMap(createTexture(paintTextureWidth, paintTextureHeight));
+		material->setMetallicMap(createTexture(paintTextureWidth, paintTextureHeight));
+		material->setRoughnessMap(createTexture(paintTextureWidth, paintTextureHeight));
+		material->setAoMap(createTexture(paintTextureWidth, paintTextureHeight));
+		material->setEmissiveMap(createTexture(paintTextureWidth, paintTextureHeight));
+		material->setDisplacementMap(createTexture(paintTextureWidth, paintTextureHeight));
 
-	clearAllTextures();
+		clearAllTextures();
+	}
+
+	Utility::glErrorCheck();
 }
 
 void GLWidget::paintGL()
 {
+	// bind offscreen fbo
 	funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	if (paint)
-	{
-		paint = false;
-
-		static glm::vec2 prevMouseCoord = mouseCoord;
-
-		if (restart)
-		{
-			restart = false;
-			prevMouseCoord = mouseCoord;
-		}
-
-		GLuint currentPaintTexture = getCurrentPaintTexture();
-
-		if (currentPaintTexture != 0)
-		{
-			std::vector<glm::vec4> coords;
-
-			unsigned int pointCount = glm::round(glm::distance(mouseCoord, prevMouseCoord));
-
-			funcs->glReadBuffer(GL_COLOR_ATTACHMENT1);
-			for (unsigned int i = 0; i < pointCount; ++i)
-			{
-				glm::vec2 coord = glm::mix(prevMouseCoord, mouseCoord, float(i) / pointCount);
-				glm::vec4 data;
-				funcs->glReadPixels(GLint(coord.x), height - GLint(coord.y), 1, 1, GL_RGBA, GL_FLOAT, &data);
-				coords.push_back(data);
-			}
-
-			prevMouseCoord = mouseCoord;
-
-			paintShader->bind();
-			uColorP.set((textureMode == TextureMode::ALBEDO || textureMode == TextureMode::EMISSIVE) ? paintColor : glm::vec3(glm::dot(paintColor, {0.2126f, 0.7152f, 0.0722f})));
-			Utility::glErrorCheck();
-			funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
-			funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, currentPaintTexture, 0);
-			Utility::glErrorCheck();
-			funcs->glViewport(0, 0, paintTextureWidth, paintTextureHeight);
-
-			funcs->glEnable(GL_BLEND);
-			funcs->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			funcs->glBindVertexArray(quadVAO);
-			funcs->glEnableVertexAttribArray(0);
-			Utility::glErrorCheck();
-			for (glm::vec4 &data : coords)
-			{
-				// valid paint coord
-				if (data.b > 0)
-				{
-					glm::vec2 paintCoord(data.x, data.y);
-
-					glm::mat4 transform = glm::translate(glm::mat4(), glm::vec3(paintCoord * 2.0f - 1.0f, 0.0f))
-						* glm::scale(glm::mat4(), glm::vec3((1.0f / paintTextureWidth) * strokeWidth, (1.0f / paintTextureHeight) * strokeWidth, 1.0f));
-
-					uTransformationP.set(transform);
-					Utility::glErrorCheck();
-					funcs->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-					Utility::glErrorCheck();
-				}
-			}
-
-			Utility::glErrorCheck();
-			funcs->glDisable(GL_BLEND);
-			funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-			funcs->glViewport(0, 0, width, height);
-			Utility::glErrorCheck();
-		}
-	}
-
+	// clear attachments
 	const GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	funcs->glDrawBuffers(2, drawBuffers);
 	funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	funcs->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	Utility::glErrorCheck();
-
+	// calculate projection matrix
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), width / float(height), 0.01f, 10000.0f);
 
+	// if there is a mesh loaded, render it according to the currently selected view mode
 	if (mesh)
 	{
 		switch (viewMode)
 		{
+
+			// the default view mode displays the mesh with some basic lighting and without textures.
+			// if wireframe is enabled, a wireframe will be drawn over the mesh
 		case ViewMode::DEFAULT:
 		{
 			defaultShader->bind();
@@ -615,6 +573,9 @@ void GLWidget::paintGL()
 			}
 			break;
 		}
+
+		// texture view mode displays the mesh without lighting. the currently active texture is
+		// applied.
 		case ViewMode::TEXTURE:
 		{
 			textureShader->bind();
@@ -622,15 +583,15 @@ void GLWidget::paintGL()
 			uModelViewProjectionT.set(projection * camera->getViewMatrix());
 			uTextureT.set(0);
 
-			GLuint currentPaintTexture = getCurrentPaintTexture();
-
 			funcs->glActiveTexture(GL_TEXTURE0);
-			funcs->glBindTexture(GL_TEXTURE_2D, currentPaintTexture);
+			funcs->glBindTexture(GL_TEXTURE_2D, getPaintTexture(textureMode));
 
 			mesh->enableVertexAttribArrays();
 			mesh->render();
 			break;
 		}
+
+		// the render view mode draws the mesh with physically- and image based lighting using all textures
 		case ViewMode::RENDER:
 		{
 			renderShader->bind();
@@ -665,14 +626,15 @@ void GLWidget::paintGL()
 			mesh->render();
 			break;
 		}
+
+		// the uv view mode displays the uv layout of the mesh using the currently active texture.
+		// wireframe mode can be optionally enabled in this view mode
 		case ViewMode::UV:
 		{
 			uvShader->bind();
 
-			GLuint currentPaintTexture = getCurrentPaintTexture();
-
 			funcs->glActiveTexture(GL_TEXTURE0);
-			funcs->glBindTexture(GL_TEXTURE_2D, currentPaintTexture);
+			funcs->glBindTexture(GL_TEXTURE_2D, getPaintTexture(textureMode));
 
 			mesh->enableVertexAttribArrays();
 
@@ -706,6 +668,7 @@ void GLWidget::paintGL()
 		}
 	}
 
+	// except for uv view mode grid and axes are always drawn
 	if (viewMode != ViewMode::UV)
 	{
 		// draw grid and axes
@@ -735,21 +698,23 @@ void GLWidget::paintGL()
 			funcs->glDepthMask(GL_TRUE);
 		}
 	}
-	Utility::glErrorCheck();
-	funcs->glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-	funcs->glReadBuffer(GL_COLOR_ATTACHMENT0);
-	funcs->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, defaultFramebufferObject());
-	//funcs->glDrawBuffer(GL_BACK);
-	
-	Utility::glErrorCheck();
 
-	funcs->glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	// blit from offscreen fbo to default frame buffer
+	{
+		funcs->glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+		funcs->glReadBuffer(GL_COLOR_ATTACHMENT0);
+		funcs->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, defaultFramebufferObject());
+		//funcs->glDrawBuffer(GL_BACK);
+
+		funcs->glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	}
 
 	Utility::glErrorCheck();
 }
 
 void GLWidget::resizeGL(int _width, int _height)
 {
+	// the widget was resized, destroy and recreate all attachments
 	width = _width;
 	height = _height;
 	createAttachments(width, height);
@@ -761,10 +726,13 @@ void GLWidget::mouseMoveEvent(QMouseEvent * _event)
 
 	QPoint currentPosQ = _event->pos();
 	glm::vec2 currentPos = glm::vec2(currentPosQ.x(), currentPosQ.y());
+	// delta to last mouse position
 	glm::vec2 delta = currentPos - mouseCoord;
+	// correct for aspect ratio to make camera movement equally fast in all directions
 	delta.y *= width / float(height);
 	mouseCoord = currentPos;
 
+	// if we are not in uv view mode, use mouse input to move the camera
 	if (viewMode != ViewMode::UV)
 	{
 		if (buttons.testFlag(Qt::RightButton))
@@ -778,6 +746,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent * _event)
 			update();
 		}
 	}
+	// if in uv view mode adjust uv map translation
 	else
 	{
 		if (buttons.testFlag(Qt::RightButton))
@@ -786,9 +755,11 @@ void GLWidget::mouseMoveEvent(QMouseEvent * _event)
 			update();
 		}
 	}
+
+	// in any case, if the left mouse button was pressed, paint into the currently active texture
 	if (buttons.testFlag(Qt::LeftButton))
 	{
-		paint = true;
+		paint();
 		update();
 	}
 }
@@ -799,21 +770,24 @@ void GLWidget::mousePressEvent(QMouseEvent * _event)
 	QPoint currentPosQ = _event->pos();
 	mouseCoord = glm::vec2(currentPosQ.x(), currentPosQ.y());
 
-	if (buttons.testFlag(Qt::LeftButton) && !buttons.testFlag(Qt::RightButton))
+	// if lest mouse button was pressed, restart mouse position and paint
+	if (buttons.testFlag(Qt::LeftButton))
 	{
 		restart = true;
-		paint = true;
+		paint();
 		update();
 	}
 }
 
 void GLWidget::wheelEvent(QWheelEvent *_event)
 {
+	// if not in uv view mode update camera controller
 	if (viewMode != ViewMode::UV)
 	{
 		cameraController.update(glm::vec2(0.0f), _event->angleDelta().y(), false);
 		update();
 	}
+	// if in uv view mode update zoom
 	else
 	{
 		const float SCROLL_DELTA_MULT = 0.001f;
@@ -824,6 +798,7 @@ void GLWidget::wheelEvent(QWheelEvent *_event)
 
 void GLWidget::createAttachments(int _width, int _height)
 {
+	// this is safe since deleting a 0 value is defined as no-op
 	funcs->glDeleteTextures(1, &colorTexture);
 	funcs->glDeleteTextures(2, &uvTexture);
 
@@ -837,8 +812,6 @@ void GLWidget::createAttachments(int _width, int _height)
 	funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture, 0);
-
-	Utility::glErrorCheck();
 
 	funcs->glGenTextures(1, &uvTexture);
 	funcs->glBindTexture(GL_TEXTURE_2D, uvTexture);
@@ -868,10 +841,9 @@ void GLWidget::createAttachments(int _width, int _height)
 	}
 
 	funcs->glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	Utility::glErrorCheck();
 }
 
+// create a texture for painting
 std::shared_ptr<Texture> GLWidget::createTexture(int _width, int _height)
 {
 	GLuint tex;
@@ -885,40 +857,112 @@ std::shared_ptr<Texture> GLWidget::createTexture(int _width, int _height)
 	return Texture::createTexture(tex, GL_TEXTURE_2D);
 }
 
-GLuint GLWidget::getCurrentPaintTexture()
+// return the id of texture of the given texture type
+GLuint GLWidget::getPaintTexture(TextureMode _textureMode)
 {
-	switch (textureMode)
+	switch (_textureMode)
 	{
 	case TextureMode::ALBEDO:
 	{
-		std::shared_ptr<Texture> tex = material->getAlbedoMap();
-		return  tex ? tex->getId() : 0;
+		return  material->getAlbedoMap()->getId();
 	}
 	case TextureMode::METALLIC:
 	{
-		std::shared_ptr<Texture> tex = material->getMetallicMap();
-		return  tex ? tex->getId() : 0;
+		return  material->getMetallicMap()->getId();
 	}
 	case TextureMode::ROUGHNESS:
 	{
-		std::shared_ptr<Texture> tex = material->getRoughnessMap();
-		return  tex ? tex->getId() : 0;
+		return  material->getRoughnessMap()->getId();
 	}
 	case TextureMode::AMBIENT_OCCLUSION:
 	{
-		std::shared_ptr<Texture> tex = material->getAoMap();
-		return  tex ? tex->getId() : 0;
+		return  material->getAoMap()->getId();
 	}
 	case TextureMode::EMISSIVE:
 	{
-		std::shared_ptr<Texture> tex = material->getEmissiveMap();
-		return  tex ? tex->getId() : 0;
+		return  material->getEmissiveMap()->getId();
 	}
 	case TextureMode::DISPLACEMENT:
 	{
-		std::shared_ptr<Texture> tex = material->getDisplacementMap();
-		return  tex ? tex->getId() : 0;
+		return  material->getDisplacementMap()->getId();
 	}
 	}
 	return 0;
+}
+
+// paint a line from the previous mouse coordinate to the current into the currently active texture
+void GLWidget::paint()
+{
+	// make the opengl context current
+	makeCurrent();
+
+	// bind the offscreen fbo and set read buffer to texture coordinate attachment
+	funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	funcs->glReadBuffer(GL_COLOR_ATTACHMENT1);
+
+	static glm::vec2 prevMouseCoord = mouseCoord;
+
+	// we may need to restart the line
+	if (restart)
+	{
+		restart = false;
+		prevMouseCoord = mouseCoord;
+	}
+
+	// determine the amount of points to draw into the texture
+	unsigned int pointCount = glm::round(glm::distance(mouseCoord, prevMouseCoord));
+
+	// read all texture coordinates on the line
+	std::vector<glm::vec4> coords;
+	for (unsigned int i = 0; i < pointCount; ++i)
+	{
+		glm::vec2 coord = glm::mix(prevMouseCoord, mouseCoord, float(i) / pointCount);
+		glm::vec4 data;
+		funcs->glReadPixels(GLint(coord.x), height - GLint(coord.y), 1, 1, GL_RGBA, GL_FLOAT, &data);
+		coords.push_back(data);
+	}
+
+	prevMouseCoord = mouseCoord;
+
+	// bind paint shader
+	paintShader->bind();
+	// if we are in albedo or emissive mode, use the user selected color, else convert it to grayscale
+	uColorP.set((textureMode == TextureMode::ALBEDO || textureMode == TextureMode::EMISSIVE) ? paintColor : glm::vec3(glm::dot(paintColor, { 0.2126f, 0.7152f, 0.0722f })));
+
+	// bind the paint fbo and the current texture
+	funcs->glBindFramebuffer(GL_FRAMEBUFFER, paintFbo);
+	funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getPaintTexture(textureMode), 0);
+
+	// set view port
+	funcs->glViewport(0, 0, paintTextureWidth, paintTextureHeight);
+
+	// setup blend state
+	funcs->glEnable(GL_BLEND);
+	funcs->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// bind quad mesh for painting points into the texture
+	funcs->glBindVertexArray(quadVAO);
+	funcs->glEnableVertexAttribArray(0);
+
+	// iterate over all texture coordinates and draw a point
+	for (glm::vec4 &data : coords)
+	{
+		// a coordinate is only valid if marked by the fragment shader in the previous draw pass
+		if (data.b > 0)
+		{
+			glm::vec2 paintCoord(data.x, data.y);
+
+			glm::mat4 transform = glm::translate(glm::mat4(), glm::vec3(paintCoord * 2.0f - 1.0f, 0.0f))
+				* glm::scale(glm::mat4(), glm::vec3((1.0f / paintTextureWidth) * strokeWidth, (1.0f / paintTextureHeight) * strokeWidth, 1.0f));
+
+			uTransformationP.set(transform);
+
+			funcs->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+		}
+	}
+
+	// reset state to default
+	funcs->glDisable(GL_BLEND);
+	funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	funcs->glViewport(0, 0, width, height);
 }

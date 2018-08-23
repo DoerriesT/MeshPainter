@@ -37,24 +37,19 @@ std::vector<char> Utility::readTextFile(const std::string & _filename)
 	return buffer;
 }
 
-//base code from Fox32 (https://stackoverflow.com/a/5167641)
-std::vector<std::string> Utility::split(const std::string & str, const std::string & seperator)
-{
-	std::vector<std::string> output;
-	std::string::size_type prev_pos = 0, pos = 0;
-	while ((pos = str.find(seperator, pos)) != std::string::npos)
-	{
-		std::string substring(str.substr(prev_pos, pos - prev_pos));
-		output.push_back(substring);
-		prev_pos = pos += seperator.size();
-	}
-	output.push_back(str.substr(prev_pos, pos - prev_pos));
-	return output;
-}
-
 std::string Utility::getPathFileExtension(const std::string & filePath)
 {
-	return split(filePath, ".").back();
+	int lastDot = filePath.size() - 1;
+	for (int i = filePath.size() - 1; i >= 0; --i)
+	{
+		if (filePath[i] == '.')
+		{
+			lastDot = i;
+			break;
+		}
+	}
+	assert(lastDot >= 0);
+	return filePath.substr(lastDot + 1, std::string::npos);
 }
 
 std::string Utility::getFormatedTime()
