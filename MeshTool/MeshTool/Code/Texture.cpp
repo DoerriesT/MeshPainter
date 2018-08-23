@@ -61,7 +61,7 @@ Texture::Texture(const std::string &_filename, bool _instantLoading)
 	int channels;
 
 	isDDS = Utility::getPathFileExtension(_filename) == "dds";
-	Utility::glErrorCheck();
+
 	if (!isDDS)
 	{
 		stbiData = stbi_load(_filename.c_str(), &width, &height, &channels, 0);
@@ -72,18 +72,14 @@ Texture::Texture(const std::string &_filename, bool _instantLoading)
 		gliTexture = gli::load(_filename);
 		assert(!gliTexture.empty());
 	}
-	Utility::glErrorCheck();
+
 	if (isDDS)
 	{
-		Utility::glErrorCheck();
 		initOpenGL(gliTexture);
-		Utility::glErrorCheck();
 	}
 	else
 	{
-		Utility::glErrorCheck();
 		initOpenGLFromData(stbiData, width, height, channels);
-		Utility::glErrorCheck();
 	}
 
 	if (!isDDS)

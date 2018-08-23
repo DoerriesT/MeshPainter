@@ -16,7 +16,7 @@ GLWidget::GLWidget(QWidget *parent)
 	wireframe(false),
 	restart(true),
 	strokeWidth(5.0f),
-	viewMode(ViewMode::DEFAULT),
+	viewMode(ViewMode::RENDER),
 	textureMode(TextureMode::ALBEDO),
 	paintTextureWidth(4096),
 	paintTextureHeight(4096),
@@ -899,8 +899,6 @@ void GLWidget::paint()
 	// bind the offscreen fbo and set read buffer to texture coordinate attachment
 	funcs->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	funcs->glReadBuffer(GL_COLOR_ATTACHMENT1);
-
-	static glm::vec2 prevMouseCoord = mouseCoord;
 
 	// we may need to restart the line
 	if (restart)

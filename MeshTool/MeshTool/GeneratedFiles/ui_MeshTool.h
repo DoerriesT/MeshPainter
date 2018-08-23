@@ -128,6 +128,7 @@ public:
         actionRenderView = new QAction(MeshTool);
         actionRenderView->setObjectName(QStringLiteral("actionRenderView"));
         actionRenderView->setCheckable(true);
+        actionRenderView->setChecked(true);
         actionToggleCameraMode = new QAction(MeshTool);
         actionToggleCameraMode->setObjectName(QStringLiteral("actionToggleCameraMode"));
         actionToggleCameraMode->setCheckable(true);
@@ -140,7 +141,7 @@ public:
         actionDefaultView = new QAction(MeshTool);
         actionDefaultView->setObjectName(QStringLiteral("actionDefaultView"));
         actionDefaultView->setCheckable(true);
-        actionDefaultView->setChecked(true);
+        actionDefaultView->setChecked(false);
         actionTextureView = new QAction(MeshTool);
         actionTextureView->setObjectName(QStringLiteral("actionTextureView"));
         actionTextureView->setCheckable(true);
@@ -385,7 +386,7 @@ public:
         actionToggleCameraMode->setText(QApplication::translate("MeshTool", "Toggle Camera Mode", nullptr));
         actionUvView->setText(QApplication::translate("MeshTool", "UV View", nullptr));
         action3dView->setText(QApplication::translate("MeshTool", "3D View", nullptr));
-        actionDefaultView->setText(QApplication::translate("MeshTool", "Default View", nullptr));
+        actionDefaultView->setText(QApplication::translate("MeshTool", "Basic View", nullptr));
         actionTextureView->setText(QApplication::translate("MeshTool", "Texture View", nullptr));
         actionSetStrokeWidth->setText(QApplication::translate("MeshTool", "Set Stroke Width", nullptr));
         actionSet_Color->setText(QApplication::translate("MeshTool", "Set Color", nullptr));

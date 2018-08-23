@@ -135,6 +135,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Render View</string>
    </property>
@@ -168,10 +171,10 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
-    <string>Default View</string>
+    <string>Basic View</string>
    </property>
   </action>
   <action name="actionTextureView">

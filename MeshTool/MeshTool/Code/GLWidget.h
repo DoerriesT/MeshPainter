@@ -86,6 +86,7 @@ private:
 	GLuint paintTextureHeight;
 	glm::vec3 paintColor;
 	glm::vec2 mouseCoord;
+	glm::vec2 prevMouseCoord;
 	float strokeWidth;
 	bool restart;
 	float uvZoom;
