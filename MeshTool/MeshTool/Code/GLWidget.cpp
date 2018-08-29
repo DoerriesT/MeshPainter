@@ -5,21 +5,22 @@
 #include "Utility.h"
 #include <QMouseEvent>
 #include "Texture.h"
-#include <iostream>
+#include <thread>
 #define STBI_MSC_SECURE_CRT
 #include <stb_image_write.h>
+#include <qmessagebox.h>
 
 GLWidget::GLWidget(QWidget *parent)
 	: QOpenGLWidget(parent),
 	camera(new Camera()),
-	cameraController(camera, glm::vec3(0.0f), 1.0f),
+	cameraController(camera, glm::vec3(0.0f), 5.0f),
 	wireframe(false),
 	restart(true),
-	strokeWidth(5.0f),
+	strokeWidth(15.0f),
 	viewMode(ViewMode::RENDER),
 	textureMode(TextureMode::ALBEDO),
-	paintTextureWidth(4096),
-	paintTextureHeight(4096),
+	paintTextureWidth(2048),
+	paintTextureHeight(2048),
 	uvZoom(1.0f),
 	uvTranslate(0.0f, 1.0)
 {
@@ -30,7 +31,6 @@ GLWidget::~GLWidget()
 {
 	// member data destructors have gl objects, so make the context current
 	makeCurrent();
-	delete material;
 }
 
 void GLWidget::setMesh(const IndexedMesh &_mesh)
@@ -77,6 +77,7 @@ void GLWidget::setTexture(const std::string & _filepath, TextureMode _textureTyp
 	// we only use 2d textures
 	if (tex->getTarget() != GL_TEXTURE_2D)
 	{
+		QMessageBox::critical(this, "Unsupported Texture Type", "The texture you tried to load is not supported as it is not 2D.");
 		return;
 	}
 
@@ -122,42 +123,42 @@ void GLWidget::clearAllTextures()
 
 	// albedo
 	{
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getAlbedoMap()->getId(), 0);
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material.getAlbedoMap()->getId(), 0);
 		funcs->glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		funcs->glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	// metallic
 	{
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getMetallicMap()->getId(), 0);
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material.getMetallicMap()->getId(), 0);
 		funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		funcs->glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	// roughness
 	{
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getRoughnessMap()->getId(), 0);
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material.getRoughnessMap()->getId(), 0);
 		funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		funcs->glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	// ao
 	{
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getAoMap()->getId(), 0);
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material.getAoMap()->getId(), 0);
 		funcs->glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		funcs->glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	// emissive
 	{
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getEmissiveMap()->getId(), 0);
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material.getEmissiveMap()->getId(), 0);
 		funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		funcs->glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	// displacement
 	{
-		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material->getDisplacementMap()->getId(), 0);
+		funcs->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, material.getDisplacementMap()->getId(), 0);
 		funcs->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		funcs->glClear(GL_COLOR_BUFFER_BIT);
 	}
@@ -174,17 +175,20 @@ void GLWidget::saveTexture(const std::string &_filepath, TextureMode _textureTyp
 {
 	makeCurrent();
 
-	unsigned char *textureData = new unsigned char[paintTextureWidth * paintTextureHeight * 4];
+	std::unique_ptr<unsigned char[]> textureData = std::make_unique<unsigned char[]>(paintTextureWidth * paintTextureHeight * 4);
 
 	funcs->glActiveTexture(GL_TEXTURE0);
 	funcs->glBindTexture(GL_TEXTURE_2D, getPaintTexture(_textureType));
 
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData.get());
 
-	stbi_flip_vertically_on_write(false);
-	stbi_write_png(_filepath.c_str(), paintTextureWidth, paintTextureHeight, 4, textureData, 0);
-
-	delete[] textureData;
+	// save in seperate thread so that the main window does not get blocked
+	std::thread t([textureData = std::move(textureData), _filepath, this]()
+	{
+		stbi_flip_vertically_on_write(false);
+		stbi_write_png(_filepath.c_str(), paintTextureWidth, paintTextureHeight, 4, textureData.get(), 0);
+	});
+	t.detach();
 }
 
 void GLWidget::saveAllTextures(const std::string &_filepath)
@@ -211,7 +215,7 @@ glm::vec3 GLWidget::getPaintColor() const
 
 Material *GLWidget::getMaterial()
 {
-	return material;
+	return &material;
 }
 
 void GLWidget::initializeGL()
@@ -494,9 +498,6 @@ void GLWidget::initializeGL()
 	// initialize the camera controller
 	cameraController.update(glm::vec2(0.0f), 0.0f, false);
 
-	// create a material
-	material = new Material(glm::vec4(1.0));
-
 	// create textures for render view mode image based lighting
 	irradianceTexture = Texture::createTexture("Resources/Textures/irradiance.dds");
 	reflectanceTexture = Texture::createTexture("Resources/Textures/reflectance.dds");
@@ -516,12 +517,12 @@ void GLWidget::initializeGL()
 
 	// create and initialize paint textures
 	{
-		material->setAlbedoMap(createTexture(paintTextureWidth, paintTextureHeight));
-		material->setMetallicMap(createTexture(paintTextureWidth, paintTextureHeight));
-		material->setRoughnessMap(createTexture(paintTextureWidth, paintTextureHeight));
-		material->setAoMap(createTexture(paintTextureWidth, paintTextureHeight));
-		material->setEmissiveMap(createTexture(paintTextureWidth, paintTextureHeight));
-		material->setDisplacementMap(createTexture(paintTextureWidth, paintTextureHeight));
+		material.setAlbedoMap(createTexture(paintTextureWidth, paintTextureHeight));
+		material.setMetallicMap(createTexture(paintTextureWidth, paintTextureHeight));
+		material.setRoughnessMap(createTexture(paintTextureWidth, paintTextureHeight));
+		material.setAoMap(createTexture(paintTextureWidth, paintTextureHeight));
+		material.setEmissiveMap(createTexture(paintTextureWidth, paintTextureHeight));
+		material.setDisplacementMap(createTexture(paintTextureWidth, paintTextureHeight));
 
 		clearAllTextures();
 	}
@@ -599,7 +600,7 @@ void GLWidget::paintGL()
 			uModelViewProjectionMatrixR.set(projection * camera->getViewMatrix());
 			uModelMatrixR.set(glm::mat4());
 			uAtlasDataR.set(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
-			uMaterialR.set(material);
+			uMaterialR.set(&material);
 			uLightColorR.set(glm::vec3(1.0f));
 			uLightDirectionR.set(glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)));
 			uCamPosR.set(camera->getPosition());
@@ -613,7 +614,7 @@ void GLWidget::paintGL()
 			uPrefilterMapR.set(8);
 			uBrdfLUTR.set(9);
 
-			material->bindTextures();
+			material.bindTextures();
 
 			funcs->glActiveTexture(GL_TEXTURE7);
 			funcs->glBindTexture(irradianceTexture->getTarget(), irradianceTexture->getId());
@@ -689,13 +690,9 @@ void GLWidget::paintGL()
 			funcs->glEnableVertexAttribArray(0);
 			funcs->glEnableVertexAttribArray(1);
 
-			funcs->glDisable(GL_DEPTH_TEST);
-			funcs->glDepthMask(GL_FALSE);
+			funcs->glClear(GL_DEPTH_BUFFER_BIT);
 
 			funcs->glDrawArrays(GL_LINES, 0, 30);
-
-			funcs->glEnable(GL_DEPTH_TEST);
-			funcs->glDepthMask(GL_TRUE);
 		}
 	}
 
@@ -837,7 +834,8 @@ void GLWidget::createAttachments(int _width, int _height)
 
 	if (funcs->glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		std::cout << "FBO not complete! " << std::endl;
+		QMessageBox::critical(this, "Failed to initialize Framebuffer", "The framebuffer could not be successfully initialized. The program will now terminate.");
+		exit(EXIT_FAILURE);
 	}
 
 	funcs->glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -864,27 +862,27 @@ GLuint GLWidget::getPaintTexture(TextureMode _textureMode)
 	{
 	case TextureMode::ALBEDO:
 	{
-		return  material->getAlbedoMap()->getId();
+		return  material.getAlbedoMap()->getId();
 	}
 	case TextureMode::METALLIC:
 	{
-		return  material->getMetallicMap()->getId();
+		return  material.getMetallicMap()->getId();
 	}
 	case TextureMode::ROUGHNESS:
 	{
-		return  material->getRoughnessMap()->getId();
+		return  material.getRoughnessMap()->getId();
 	}
 	case TextureMode::AMBIENT_OCCLUSION:
 	{
-		return  material->getAoMap()->getId();
+		return  material.getAoMap()->getId();
 	}
 	case TextureMode::EMISSIVE:
 	{
-		return  material->getEmissiveMap()->getId();
+		return  material.getEmissiveMap()->getId();
 	}
 	case TextureMode::DISPLACEMENT:
 	{
-		return  material->getDisplacementMap()->getId();
+		return  material.getDisplacementMap()->getId();
 	}
 	}
 	return 0;

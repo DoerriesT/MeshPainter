@@ -3,7 +3,6 @@
 #include <glm\vec3.hpp>
 #include <string>
 #include <memory>
-#include "GLFunctions.h"
 
 class Texture;
 
@@ -53,7 +52,6 @@ public:
 	void bindTextures() const;
 
 private:
-	QOpenGLFunctions_3_3_Core *funcs;
 	glm::vec4 albedo;
 	float metallic;
 	float roughness;

@@ -62,7 +62,7 @@ std::vector<std::string> splitLineString(const std::string &_input)
 	return words;
 }
 
-IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
+IndexedMesh OBJLoader::loadOBJ(const char *_filepath, Error &_error)
 {
 	uint32_t currentIndex = 0;
 	std::map<std::string, uint32_t> vertexToIndexMap;
@@ -71,6 +71,8 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 	std::vector<glm::vec3> positions;
 	std::vector<glm::vec3> normals;
 	std::vector<glm::vec2> texCoords;
+
+	_error = Error::SUCCESS;
 
 	// parse file
 	std::ifstream objFile(_filepath);
@@ -84,8 +86,15 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 			continue;
 		}
 
-		std::vector<std::string> lineParts = splitLineString(line);// Utility::split(line, " ");
+		std::vector<std::string> lineParts = splitLineString(line);
+
+		// assert for debugging, error code for release error reporting to user
 		assert(!lineParts.empty());
+		if (lineParts.empty())
+		{
+			_error = Error::FAILURE;
+			return {};
+		}
 
 		// object
 		if (lineParts[0] == "o")
@@ -100,36 +109,54 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 		else if (lineParts[0] == "v")
 		{
 			assert(lineParts.size() == 4);
+			if (lineParts.size() != 4)
+			{
+				_error = Error::FAILURE;
+				return {};
+			}
 			positions.push_back(glm::vec3(std::stof(lineParts[1]), std::stof(lineParts[2]), std::stof(lineParts[3])));
 		}
 		// normal
 		else if (lineParts[0] == "vn")
 		{
 			assert(lineParts.size() == 4);
+			if (lineParts.size() != 4)
+			{
+				_error = Error::FAILURE;
+				return {};
+			}
 			normals.push_back(glm::vec3(std::stof(lineParts[1]), std::stof(lineParts[2]), std::stof(lineParts[3])));
 		}
 		// tex coord
 		else if (lineParts[0] == "vt")
 		{
 			assert(lineParts.size() >= 3);
+			if (lineParts.size() < 3)
+			{
+				_error = Error::FAILURE;
+				return {};
+			}
 			texCoords.push_back(glm::vec2(std::stof(lineParts[1]), std::stof(lineParts[2])));
 		}
 		// face
 		else if (lineParts[0] == "f")
 		{
 			assert(lineParts.size() >= 4);
+			if (lineParts.size() < 4)
+			{
+				_error = Error::FAILURE;
+				return {};
+			}
 			std::vector<uint32_t> localIndices;
 
 			for (unsigned int i = 1; i < lineParts.size(); ++i)
 			{
 				std::vector<std::string> faceParts = splitFaceString(lineParts[i]);// Utility::split(lineParts[i], "/");
 
-				// skip this face if it has no position
-				// TODO: implement proper error handling
 				if (faceParts.empty() || faceParts[0].empty())
 				{
-					assert(false);
-					continue;
+					_error = Error::FAILURE;
+					return {};
 				}
 
 				// add empty records if none are present
@@ -149,6 +176,11 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 					if (posIndex < 0)
 					{
 						assert(-posIndex <= positions.size());
+						if (-posIndex > positions.size())
+						{
+							_error = Error::FAILURE;
+							return {};
+						}
 						posIndex = positions.size() + posIndex;
 					}
 					else
@@ -156,6 +188,11 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 						--posIndex;
 					}
 					assert(posIndex >= 0 && posIndex < positions.size());
+					if (posIndex < 0 || posIndex >= positions.size())
+					{
+						_error = Error::FAILURE;
+						return {};
+					}
 					vertex.position = positions[posIndex];
 				}
 
@@ -165,6 +202,11 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 					if (texCoordIndex < 0)
 					{
 						assert(-texCoordIndex <= texCoords.size());
+						if (-texCoordIndex > texCoords.size())
+						{
+							_error = Error::FAILURE;
+							return {};
+						}
 						texCoordIndex = texCoords.size() + texCoordIndex;
 					}
 					else
@@ -176,6 +218,11 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 					if (!faceParts[1].empty())
 					{
 						assert(texCoordIndex >= 0 && texCoordIndex < texCoords.size());
+						if (texCoordIndex < 0 || texCoordIndex >= texCoords.size())
+						{
+							_error = Error::FAILURE;
+							return {};
+						}
 						vertex.texCoord = texCoords[texCoordIndex];
 					}
 				}
@@ -186,6 +233,11 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 					if (normalIndex < 0)
 					{
 						assert(-normalIndex <= normals.size());
+						if (-normalIndex > normals.size())
+						{
+							_error = Error::FAILURE;
+							return {};
+						}
 						normalIndex = normals.size() + normalIndex;
 					}
 					else
@@ -197,6 +249,11 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 					if (!faceParts[2].empty())
 					{
 						assert(normalIndex >= 0 && normalIndex < normals.size());
+						if (normalIndex < 0 || normalIndex >= normals.size())
+						{
+							_error = Error::FAILURE;
+							return {};
+						}
 						vertex.normal = normals[normalIndex];
 					}
 				}
@@ -233,6 +290,11 @@ IndexedMesh OBJLoader::loadOBJ(const char *_filepath)
 	assert(indexSet.size() == vertices.size());
 #endif // _DEBUG
 
+	if (vertices.empty() || indices.empty())
+	{
+		_error = Error::FAILURE;
+		return {};
+	}
 
 	return { vertices, indices };
 }

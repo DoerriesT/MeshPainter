@@ -6,9 +6,6 @@
 #include <QColorDialog>
 #include <QInputDialog>
 #include <QMessageBox>
-#include "Texture.h"
-
-float test;
 
 MeshTool::MeshTool(QWidget *parent)
 	: QMainWindow(parent),
@@ -346,6 +343,8 @@ void MeshTool::on_actionOpen_triggered()
 		loadingMesh = true;
 		MeshTool *meshTool = this;
 
+		QMessageBox::information(this, "Loading Model", "The model is being loaded in the background. This may take a while.");
+
 		// start thread to load mesh
 		std::thread meshLoadThread([fileName, meshTool]()
 		{
@@ -353,12 +352,23 @@ void MeshTool::on_actionOpen_triggered()
 			QEventLoop loop;
 			Q_UNUSED(loop)
 
+			OBJLoader::Error loadError;
 			// allocate on heap to avoid unnecessary copy when posting to gui thread
-			IndexedMesh *indexedMesh =  new IndexedMesh(OBJLoader::loadOBJ(fileName.toLatin1().data()));
+			IndexedMesh *indexedMesh =  new IndexedMesh(OBJLoader::loadOBJ(fileName.toLatin1().data(), loadError));
 
 			// execture on gui thread
-			QTimer::singleShot(0, qApp, [indexedMesh, meshTool]()
+			QTimer::singleShot(0, qApp, [indexedMesh, meshTool, loadError]()
 			{
+				if (loadError != OBJLoader::Error::SUCCESS)
+				{
+					QMessageBox::critical(meshTool, "Model Loading Failed!", "Loading the Model has failed.");
+
+					// acquire lock to signal that mesh loading is done
+					std::lock_guard<std::mutex> lockReset(meshTool->loadingMeshMutex);
+					meshTool->loadingMesh = false;
+					return;
+				}
+
 				// create GLMesh
 				meshTool->openGLWidget->setMesh(*indexedMesh);
 				// the GLMesh created in GLWidget holds a copy of indexedMesh, so delete this instance

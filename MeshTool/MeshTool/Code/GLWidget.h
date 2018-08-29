@@ -63,8 +63,9 @@ private:
 	ArcBallCameraController cameraController;
 
 	std::shared_ptr<GLMesh> mesh;
-	Material *material;
+	Material material;
 
+	// buffer handles for meshes
 	GLuint gridVAO;
 	GLuint gridVBO;
 	GLuint axisVAO;
@@ -75,6 +76,7 @@ private:
 	GLuint quadVBO;
 	GLuint quadEBO;
 
+	// fbo and associated texture handles
 	GLuint fbo;
 	GLuint colorTexture;
 	GLuint uvTexture;
@@ -82,6 +84,7 @@ private:
 
 	GLuint paintFbo;
 
+	// painting related
 	GLuint paintTextureWidth;
 	GLuint paintTextureHeight;
 	glm::vec3 paintColor;
@@ -92,6 +95,7 @@ private:
 	float uvZoom;
 	glm::vec2 uvTranslate;
 
+	// shaders
 	std::shared_ptr<ShaderProgram> defaultShader;
 	std::shared_ptr<ShaderProgram> gridShader;
 	std::shared_ptr<ShaderProgram> uvShader;
@@ -100,16 +104,19 @@ private:
 	std::shared_ptr<ShaderProgram> textureShader;
 	std::shared_ptr<ShaderProgram> blitShader;
 
+	// IBL textures
 	std::shared_ptr<Texture> irradianceTexture;
 	std::shared_ptr<Texture> reflectanceTexture;
 	std::shared_ptr<Texture> brdfLUT;
 
+	// default shader uniforms
 	Uniform<glm::mat4> uModelViewProjection = Uniform<glm::mat4>("uModelViewProjection");
 	Uniform<glm::mat4> uModel = Uniform<glm::mat4>("uModel");
 	Uniform<glm::vec3> uCamPos = Uniform<glm::vec3>("uCamPos");
 	Uniform<glm::vec3> uLightDir = Uniform<glm::vec3>("uLightDir");
 	Uniform<GLboolean> uLineMode = Uniform<GLboolean>("uLineMode");
 
+	// render shader uniforms
 	Uniform<glm::mat4> uModelViewProjectionMatrixR = Uniform<glm::mat4>("uModelViewProjectionMatrix");
 	Uniform<glm::mat4> uModelMatrixR = Uniform<glm::mat4>("uModelMatrix");
 	Uniform<glm::vec4> uAtlasDataR = Uniform<glm::vec4>("uAtlasData"); // x = 1/cols, y = 1/rows, z = texOffsetX, w = texOffsetY
@@ -127,18 +134,23 @@ private:
 	Uniform<GLint> uPrefilterMapR = Uniform<GLint>("uPrefilterMap");
 	Uniform<GLint> uBrdfLUTR = Uniform<GLint>("uBrdfLUT");
 
+	// grid shader uniform
 	Uniform<glm::mat4> uModelViewProjectionG = Uniform<glm::mat4>("uModelViewProjection");
 
+	// paint shader uniforms
 	Uniform<glm::mat4> uTransformationP = Uniform<glm::mat4>("uTransformation");
 	Uniform<glm::vec3> uColorP = Uniform<glm::vec3>("uColor");
 
+	// texture view shader uniforms
 	Uniform<glm::mat4> uModelViewProjectionT = Uniform<glm::mat4>("uModelViewProjection");
 	Uniform<GLint> uTextureT = Uniform<GLint>("uTexture");
 
+	// uv view shader uniforms
 	Uniform<GLboolean> uGridModeU = Uniform<GLboolean>("uGridMode");
 	Uniform<glm::mat3> uTransformationU = Uniform<glm::mat3>("uTransformation");
 	Uniform<GLint> uTextureU = Uniform<GLint>("uTexture");
 
+	// blit shader uniform
 	Uniform<GLint> uSourceTextureB = Uniform<GLint>("uSourceTexture");
 
 	void createAttachments(int _width, int _height);

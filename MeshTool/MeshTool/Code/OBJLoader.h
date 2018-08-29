@@ -3,5 +3,10 @@
 
 namespace OBJLoader
 {
-	IndexedMesh loadOBJ(const char *_filepath);
+	enum class Error
+	{
+		SUCCESS, FAILURE
+	};
+
+	IndexedMesh loadOBJ(const char *_filepath, Error &_error);
 }

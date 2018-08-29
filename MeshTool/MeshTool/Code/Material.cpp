@@ -1,5 +1,6 @@
 #include "Material.h"
 #include "Texture.h"
+#include "GLFunctions.h"
 
 const std::uint32_t Material::ALBEDO = 1 << 0;
 const std::uint32_t Material::NORMAL = 1 << 1;
@@ -10,7 +11,7 @@ const std::uint32_t Material::EMISSIVE = 1 << 5;
 const std::uint32_t Material::DISPLACEMENT = 1 << 6;
 
 Material::Material(const glm::vec4 &_albedo, float _metallic, float _roughness, const glm::vec3 &_emissive)
-	: albedo(_albedo), metallic(_metallic), roughness(_roughness), emissive(_emissive), funcs(getGLFunctions())
+	: albedo(_albedo), metallic(_metallic), roughness(_roughness), emissive(_emissive)
 {
 }
 
@@ -30,13 +31,12 @@ Material::Material(const std::shared_ptr<Texture> &_albedoMap,
 	roughnessMap(_roughnessMap), 
 	aoMap(_aoMap), 
 	emissiveMap(_emissiveMap),
-	displacementMap(_displacementMap),
-	funcs(getGLFunctions())
+	displacementMap(_displacementMap)
 {
 }
 
 Material::Material(const std::string &_basePath, std::uint32_t _flags)
-	: albedo(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)), metallic(0.0f), roughness(0.0f), funcs(getGLFunctions())
+	: albedo(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)), metallic(0.0f), roughness(0.0f)
 {
 	std::string albedoPath = _basePath + "_a.dds";
 	std::string normalPath = _basePath + "_n.dds";
@@ -222,6 +222,7 @@ void Material::setEmissive(const glm::vec3 &_emissive)
 
 void Material::bindTextures() const
 {
+	auto funcs = getGLFunctions();
 	if (albedoMap)
 	{
 		funcs->glActiveTexture(GL_TEXTURE0);
