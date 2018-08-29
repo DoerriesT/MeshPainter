@@ -26,21 +26,21 @@ namespace QT_NAMESPACE {
 }
 #endif
 
-int QT_RCC_MANGLE_NAMESPACE(qInitResources_MeshTool)();
-int QT_RCC_MANGLE_NAMESPACE(qInitResources_MeshTool)()
+int QT_RCC_MANGLE_NAMESPACE(qInitResources_MeshPainter)();
+int QT_RCC_MANGLE_NAMESPACE(qInitResources_MeshPainter)()
 {
     return 1;
 }
 
-int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_MeshTool)();
-int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_MeshTool)()
+int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_MeshPainter)();
+int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_MeshPainter)()
 {
     return 1;
 }
 
 namespace {
    struct initializer {
-       initializer() { QT_RCC_MANGLE_NAMESPACE(qInitResources_MeshTool)(); }
-       ~initializer() { QT_RCC_MANGLE_NAMESPACE(qCleanupResources_MeshTool)(); }
+       initializer() { QT_RCC_MANGLE_NAMESPACE(qInitResources_MeshPainter)(); }
+       ~initializer() { QT_RCC_MANGLE_NAMESPACE(qCleanupResources_MeshPainter)(); }
    } dummy;
 }

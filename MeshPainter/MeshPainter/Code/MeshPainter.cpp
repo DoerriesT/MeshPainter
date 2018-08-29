@@ -1,4 +1,4 @@
-#include "MeshTool.h"
+#include "MeshPainter.h"
 #include "OBJLoader.h"
 #include <qfiledialog.h>
 #include <thread>
@@ -7,7 +7,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 
-MeshTool::MeshTool(QWidget *parent)
+MeshPainter::MeshPainter(QWidget *parent)
 	: QMainWindow(parent),
 	loadingMesh(false)
 {
@@ -27,23 +27,23 @@ MeshTool::MeshTool(QWidget *parent)
 	textureModeGroup->addAction(actionActivateDisplacementTexture);
 }
 
-MeshTool::~MeshTool()
+MeshPainter::~MeshPainter()
 {
 }
 
-void MeshTool::on_actionCenterCamera_triggered()
+void MeshPainter::on_actionCenterCamera_triggered()
 {
 	openGLWidget->centerCamera();
 	openGLWidget->update();
 }
 
-void MeshTool::on_actionToggleWireframe_toggled(bool _enabled)
+void MeshPainter::on_actionToggleWireframe_toggled(bool _enabled)
 {
 	openGLWidget->toggleWireframe(_enabled);
 	openGLWidget->update();
 }
 
-void MeshTool::on_actionDefaultView_toggled(bool _enabled)
+void MeshPainter::on_actionDefaultView_toggled(bool _enabled)
 {
 	if (_enabled)
 	{
@@ -52,7 +52,7 @@ void MeshTool::on_actionDefaultView_toggled(bool _enabled)
 	}
 }
 
-void MeshTool::on_actionTextureView_toggled(bool _enabled)
+void MeshPainter::on_actionTextureView_toggled(bool _enabled)
 {
 	if (_enabled)
 	{
@@ -61,7 +61,7 @@ void MeshTool::on_actionTextureView_toggled(bool _enabled)
 	}
 }
 
-void MeshTool::on_actionRenderView_toggled(bool _enabled)
+void MeshPainter::on_actionRenderView_toggled(bool _enabled)
 {
 	if (_enabled)
 	{
@@ -70,7 +70,7 @@ void MeshTool::on_actionRenderView_toggled(bool _enabled)
 	}
 }
 
-void MeshTool::on_actionUvView_toggled(bool _enabled)
+void MeshPainter::on_actionUvView_toggled(bool _enabled)
 {
 	if (_enabled)
 	{
@@ -79,7 +79,7 @@ void MeshTool::on_actionUvView_toggled(bool _enabled)
 	}
 }
 
-void MeshTool::on_actionOpenAlbedoTexture_triggered()
+void MeshPainter::on_actionOpenAlbedoTexture_triggered()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Albedo Texture"), "", tr("PNG (*.png);;DirectDrawSurface (*.dds)"));
 	if (!fileName.isEmpty())
@@ -89,7 +89,7 @@ void MeshTool::on_actionOpenAlbedoTexture_triggered()
 	}
 }
 
-void MeshTool::on_actionOpenMetallicTexture_triggered()
+void MeshPainter::on_actionOpenMetallicTexture_triggered()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Albedo Texture"), "", tr("PNG (*.png);;DirectDrawSurface (*.dds)"));
 	if (!fileName.isEmpty())
@@ -99,7 +99,7 @@ void MeshTool::on_actionOpenMetallicTexture_triggered()
 	}
 }
 
-void MeshTool::on_actionOpenRoughnessTexture_triggered()
+void MeshPainter::on_actionOpenRoughnessTexture_triggered()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Roughness Texture"), "", tr("PNG (*.png);;DirectDrawSurface (*.dds)"));
 	if (!fileName.isEmpty())
@@ -109,7 +109,7 @@ void MeshTool::on_actionOpenRoughnessTexture_triggered()
 	}
 }
 
-void MeshTool::on_actionOpenAmbientOcclusionTexture_triggered()
+void MeshPainter::on_actionOpenAmbientOcclusionTexture_triggered()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Ambient Occlusion Texture"), "", tr("PNG (*.png);;DirectDrawSurface (*.dds)"));
 	if (!fileName.isEmpty())
@@ -119,7 +119,7 @@ void MeshTool::on_actionOpenAmbientOcclusionTexture_triggered()
 	}
 }
 
-void MeshTool::on_actionOpenEmissiveTexture_triggered()
+void MeshPainter::on_actionOpenEmissiveTexture_triggered()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Emissive Texture"), "", tr("PNG (*.png);;DirectDrawSurface (*.dds)"));
 	if (!fileName.isEmpty())
@@ -129,7 +129,7 @@ void MeshTool::on_actionOpenEmissiveTexture_triggered()
 	}
 }
 
-void MeshTool::on_actionOpenDisplacementTexture_triggered()
+void MeshPainter::on_actionOpenDisplacementTexture_triggered()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Displacement Texture"), "", tr("PNG (*.png);;DirectDrawSurface (*.dds)"));
 	if (!fileName.isEmpty())
@@ -139,7 +139,7 @@ void MeshTool::on_actionOpenDisplacementTexture_triggered()
 	}
 }
 
-void MeshTool::on_actionSaveAlbedoTexture_triggered()
+void MeshPainter::on_actionSaveAlbedoTexture_triggered()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Albedo Texture"), "", tr("PNG (*.png)"));
 	if (!fileName.isEmpty())
@@ -148,7 +148,7 @@ void MeshTool::on_actionSaveAlbedoTexture_triggered()
 	}
 }
 
-void MeshTool::on_actionSaveMetallicTexture_triggered()
+void MeshPainter::on_actionSaveMetallicTexture_triggered()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Metallic Texture"), "", tr("PNG (*.png)"));
 	if (!fileName.isEmpty())
@@ -157,7 +157,7 @@ void MeshTool::on_actionSaveMetallicTexture_triggered()
 	}
 }
 
-void MeshTool::on_actionSaveRoughnessTexture_triggered()
+void MeshPainter::on_actionSaveRoughnessTexture_triggered()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Roughness Texture"), "", tr("PNG (*.png)"));
 	if (!fileName.isEmpty())
@@ -166,7 +166,7 @@ void MeshTool::on_actionSaveRoughnessTexture_triggered()
 	}
 }
 
-void MeshTool::on_actionSaveAmbientOcclusionTexture_triggered()
+void MeshPainter::on_actionSaveAmbientOcclusionTexture_triggered()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Ambient Occlusion Texture"), "", tr("PNG (*.png)"));
 	if (!fileName.isEmpty())
@@ -175,7 +175,7 @@ void MeshTool::on_actionSaveAmbientOcclusionTexture_triggered()
 	}
 }
 
-void MeshTool::on_actionSaveEmissiveTexture_triggered()
+void MeshPainter::on_actionSaveEmissiveTexture_triggered()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Emissive Texture"), "", tr("PNG (*.png)"));
 	if (!fileName.isEmpty())
@@ -184,7 +184,7 @@ void MeshTool::on_actionSaveEmissiveTexture_triggered()
 	}
 }
 
-void MeshTool::on_actionSaveDisplacementTexture_triggered()
+void MeshPainter::on_actionSaveDisplacementTexture_triggered()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Displacement Texture"), "", tr("PNG (*.png)"));
 	if (!fileName.isEmpty())
@@ -193,7 +193,7 @@ void MeshTool::on_actionSaveDisplacementTexture_triggered()
 	}
 }
 
-void MeshTool::on_actionSaveAllTextures_triggered()
+void MeshPainter::on_actionSaveAllTextures_triggered()
 {
 	QString directoryName = QFileDialog::getExistingDirectory(this, tr("Save All Textures"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 	if (!directoryName.isEmpty())
@@ -202,7 +202,7 @@ void MeshTool::on_actionSaveAllTextures_triggered()
 	}
 }
 
-void MeshTool::on_actionActivateAlbedoTexture_toggled(bool _enabled)
+void MeshPainter::on_actionActivateAlbedoTexture_toggled(bool _enabled)
 {
 	if (_enabled)
 	{
@@ -211,7 +211,7 @@ void MeshTool::on_actionActivateAlbedoTexture_toggled(bool _enabled)
 	}
 }
 
-void MeshTool::on_actionActivateMetallicTexture_toggled(bool _enabled)
+void MeshPainter::on_actionActivateMetallicTexture_toggled(bool _enabled)
 {
 	if (_enabled)
 	{
@@ -220,7 +220,7 @@ void MeshTool::on_actionActivateMetallicTexture_toggled(bool _enabled)
 	}
 }
 
-void MeshTool::on_actionActivateRoughnessTexture_toggled(bool _enabled)
+void MeshPainter::on_actionActivateRoughnessTexture_toggled(bool _enabled)
 {
 	if (_enabled)
 	{
@@ -229,7 +229,7 @@ void MeshTool::on_actionActivateRoughnessTexture_toggled(bool _enabled)
 	}
 }
 
-void MeshTool::on_actionActivateAmbientOcclusionTexture_toggled(bool _enabled)
+void MeshPainter::on_actionActivateAmbientOcclusionTexture_toggled(bool _enabled)
 {
 	if (_enabled)
 	{
@@ -238,7 +238,7 @@ void MeshTool::on_actionActivateAmbientOcclusionTexture_toggled(bool _enabled)
 	}
 }
 
-void MeshTool::on_actionActivateEmissiveTexture_toggled(bool _enabled)
+void MeshPainter::on_actionActivateEmissiveTexture_toggled(bool _enabled)
 {
 	if (_enabled)
 	{
@@ -247,7 +247,7 @@ void MeshTool::on_actionActivateEmissiveTexture_toggled(bool _enabled)
 	}
 }
 
-void MeshTool::on_actionActivateDisplacementTexture_toggled(bool _enabled)
+void MeshPainter::on_actionActivateDisplacementTexture_toggled(bool _enabled)
 {
 	if (_enabled)
 	{
@@ -256,14 +256,14 @@ void MeshTool::on_actionActivateDisplacementTexture_toggled(bool _enabled)
 	}
 }
 
-void MeshTool::on_actionSetStrokeWidth_triggered()
+void MeshPainter::on_actionSetStrokeWidth_triggered()
 {
 	double result = QInputDialog::getDouble(this, tr("Set Stroke Width"), tr("Set Stroke Width"), openGLWidget->getStrokeWidth(), 1.0, 50.0);
 	openGLWidget->setStrokeWidth(float(result));
 	openGLWidget->update();
 }
 
-void MeshTool::on_actionSetPaint_triggered()
+void MeshPainter::on_actionSetPaint_triggered()
 {
 	glm::vec3 prevColor = openGLWidget->getPaintColor() * 255.0f; // QColor uses 0 - 255
 	QColorDialog colorDialog({ int(prevColor.r), int(prevColor.g), int(prevColor.b )}, this);
@@ -277,7 +277,7 @@ void MeshTool::on_actionSetPaint_triggered()
 	}
 }
 
-void MeshTool::on_actionClearActive_triggered()
+void MeshPainter::on_actionClearActive_triggered()
 {
 	QMessageBox msgBox;
 	msgBox.setWindowTitle("Clear Active Texture");
@@ -299,7 +299,7 @@ void MeshTool::on_actionClearActive_triggered()
 	}
 }
 
-void MeshTool::on_actionClearAll_triggered()
+void MeshPainter::on_actionClearAll_triggered()
 {
 	QMessageBox msgBox;
 	msgBox.setWindowTitle("Clear All Textures");
@@ -314,7 +314,7 @@ void MeshTool::on_actionClearAll_triggered()
 	}
 }
 
-void MeshTool::on_actionSetEmissiveColor_triggered()
+void MeshPainter::on_actionSetEmissiveColor_triggered()
 {
 	glm::vec3 prevColor = openGLWidget->getMaterial()->getEmissive() * 255.0f;
 	QColorDialog colorDialog({ int(prevColor.r), int(prevColor.g), int(prevColor.b) }, this);
@@ -328,7 +328,7 @@ void MeshTool::on_actionSetEmissiveColor_triggered()
 	}
 }
 
-void MeshTool::on_actionOpen_triggered()
+void MeshPainter::on_actionOpen_triggered()
 {
 	// get file path
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Mesh File"), "", tr("Wavefront OBJ File (*.obj)"));
@@ -341,7 +341,7 @@ void MeshTool::on_actionOpen_triggered()
 	{
 		// set flag that a mesh loading operation is going on
 		loadingMesh = true;
-		MeshTool *meshTool = this;
+		MeshPainter *meshTool = this;
 
 		QMessageBox::information(this, "Loading Model", "The model is being loaded in the background. This may take a while.");
 

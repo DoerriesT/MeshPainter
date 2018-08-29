@@ -37,12 +37,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="MeshTool.qrc">
+    <QtRcc Include="MeshPainter.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="MeshTool.rc" />
+    <ResourceCompile Include="MeshPainter.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\main.cpp">
@@ -50,9 +50,6 @@
     </ClCompile>
     <ClCompile Include="Code\Utility.cpp">
       <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\MeshTool.cpp">
-      <Filter>Code\UI</Filter>
     </ClCompile>
     <ClCompile Include="Code\GLWidget.cpp">
       <Filter>Code\UI</Filter>
@@ -93,12 +90,15 @@
     <ClCompile Include="Code\stb_image_write.cpp">
       <Filter>Code\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Code\MeshPainter.cpp">
+      <Filter>Code\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="Code\MeshTool.h">
+    <QtMoc Include="Code\GLWidget.h">
       <Filter>Code\UI</Filter>
     </QtMoc>
-    <QtMoc Include="Code\GLWidget.h">
+    <QtMoc Include="Code\MeshPainter.h">
       <Filter>Code\UI</Filter>
     </QtMoc>
   </ItemGroup>
@@ -179,7 +179,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="Code\MeshTool.ui">
+    <QtUic Include="Code\MeshPainter.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

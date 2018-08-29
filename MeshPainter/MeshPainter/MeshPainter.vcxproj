@@ -14,6 +14,7 @@
     <ProjectGuid>{B12702AD-ABFB-343A-A199-8E24837244A3}</ProjectGuid>
     <Keyword>Qt4VSv1.0</Keyword>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <ProjectName>MeshPainter</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -115,12 +116,12 @@
     </QtRcc>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <QtRcc Include="MeshTool.qrc">
+    <QtRcc Include="MeshPainter.qrc">
       <SubType>Designer</SubType>
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="MeshTool.rc" />
+    <ResourceCompile Include="MeshPainter.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\ArcBallCameraController.cpp" />
@@ -130,7 +131,7 @@
     <ClCompile Include="Code\main.cpp" />
     <ClCompile Include="Code\Material.cpp" />
     <ClCompile Include="Code\Mesh.cpp" />
-    <ClCompile Include="Code\MeshTool.cpp" />
+    <ClCompile Include="Code\MeshPainter.cpp" />
     <ClCompile Include="Code\OBJLoader.cpp" />
     <ClCompile Include="Code\ShaderProgram.cpp" />
     <ClCompile Include="Code\stb_image.cpp" />
@@ -152,7 +153,7 @@
     <ClInclude Include="Code\GLFunctions.h" />
     <ClInclude Include="Code\Material.h" />
     <ClInclude Include="Code\Mesh.h" />
-    <QtMoc Include="Code\MeshTool.h">
+    <QtMoc Include="Code\MeshPainter.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;.\Code</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;.\Code</IncludePath>
     </QtMoc>
@@ -179,7 +180,7 @@
     <None Include="Resources\Shaders\uvView.vert" />
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="Code\MeshTool.ui" />
+    <QtUic Include="Code\MeshPainter.ui" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

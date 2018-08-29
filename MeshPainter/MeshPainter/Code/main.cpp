@@ -1,4 +1,4 @@
-#include "MeshTool.h"
+#include "MeshPainter.h"
 #include <QtWidgets/QApplication>
 
 int main(int argc, char *argv[])
@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 	//format.setStencilBufferSize(8);
 	QSurfaceFormat::setDefaultFormat(format);
 
-	MeshTool w;
+	MeshPainter w;
 	w.show();
 	return a.exec();
 }

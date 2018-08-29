@@ -1,16 +1,16 @@
 /****************************************************************************
-** Meta object code from reading C++ file 'MeshTool.h'
+** Meta object code from reading C++ file 'MeshPainter.h'
 **
 ** Created by: The Qt Meta Object Compiler version 67 (Qt 5.11.1)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../Code/MeshTool.h"
+#include "../../Code/MeshPainter.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
-#error "The header file 'MeshTool.h' doesn't include <QObject>."
+#error "The header file 'MeshPainter.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
 #error "This file was generated using the moc from 5.11.1. It"
 #error "cannot be used with the include files from this version of Qt."
@@ -20,55 +20,55 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
-struct qt_meta_stringdata_MeshTool_t {
+struct qt_meta_stringdata_MeshPainter_t {
     QByteArrayData data[34];
-    char stringdata0[1157];
+    char stringdata0[1160];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_MeshTool_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_MeshPainter_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_MeshTool_t qt_meta_stringdata_MeshTool = {
+static const qt_meta_stringdata_MeshPainter_t qt_meta_stringdata_MeshPainter = {
     {
-QT_MOC_LITERAL(0, 0, 8), // "MeshTool"
-QT_MOC_LITERAL(1, 9, 23), // "on_actionOpen_triggered"
-QT_MOC_LITERAL(2, 33, 0), // ""
-QT_MOC_LITERAL(3, 34, 36), // "on_actionOpenAlbedoTexture_tr..."
-QT_MOC_LITERAL(4, 71, 38), // "on_actionOpenMetallicTexture_..."
-QT_MOC_LITERAL(5, 110, 39), // "on_actionOpenRoughnessTexture..."
-QT_MOC_LITERAL(6, 150, 46), // "on_actionOpenAmbientOcclusion..."
-QT_MOC_LITERAL(7, 197, 38), // "on_actionOpenEmissiveTexture_..."
-QT_MOC_LITERAL(8, 236, 42), // "on_actionOpenDisplacementText..."
-QT_MOC_LITERAL(9, 279, 36), // "on_actionSaveAlbedoTexture_tr..."
-QT_MOC_LITERAL(10, 316, 38), // "on_actionSaveMetallicTexture_..."
-QT_MOC_LITERAL(11, 355, 39), // "on_actionSaveRoughnessTexture..."
-QT_MOC_LITERAL(12, 395, 46), // "on_actionSaveAmbientOcclusion..."
-QT_MOC_LITERAL(13, 442, 38), // "on_actionSaveEmissiveTexture_..."
-QT_MOC_LITERAL(14, 481, 42), // "on_actionSaveDisplacementText..."
-QT_MOC_LITERAL(15, 524, 34), // "on_actionSaveAllTextures_trig..."
-QT_MOC_LITERAL(16, 559, 38), // "on_actionActivateAlbedoTextur..."
-QT_MOC_LITERAL(17, 598, 8), // "_enabled"
-QT_MOC_LITERAL(18, 607, 40), // "on_actionActivateMetallicText..."
-QT_MOC_LITERAL(19, 648, 41), // "on_actionActivateRoughnessTex..."
-QT_MOC_LITERAL(20, 690, 48), // "on_actionActivateAmbientOcclu..."
-QT_MOC_LITERAL(21, 739, 40), // "on_actionActivateEmissiveText..."
-QT_MOC_LITERAL(22, 780, 44), // "on_actionActivateDisplacement..."
-QT_MOC_LITERAL(23, 825, 33), // "on_actionSetStrokeWidth_trigg..."
-QT_MOC_LITERAL(24, 859, 27), // "on_actionSetPaint_triggered"
-QT_MOC_LITERAL(25, 887, 30), // "on_actionClearActive_triggered"
-QT_MOC_LITERAL(26, 918, 27), // "on_actionClearAll_triggered"
-QT_MOC_LITERAL(27, 946, 35), // "on_actionSetEmissiveColor_tri..."
-QT_MOC_LITERAL(28, 982, 31), // "on_actionCenterCamera_triggered"
-QT_MOC_LITERAL(29, 1014, 32), // "on_actionToggleWireframe_toggled"
-QT_MOC_LITERAL(30, 1047, 28), // "on_actionDefaultView_toggled"
-QT_MOC_LITERAL(31, 1076, 28), // "on_actionTextureView_toggled"
-QT_MOC_LITERAL(32, 1105, 27), // "on_actionRenderView_toggled"
-QT_MOC_LITERAL(33, 1133, 23) // "on_actionUvView_toggled"
+QT_MOC_LITERAL(0, 0, 11), // "MeshPainter"
+QT_MOC_LITERAL(1, 12, 23), // "on_actionOpen_triggered"
+QT_MOC_LITERAL(2, 36, 0), // ""
+QT_MOC_LITERAL(3, 37, 36), // "on_actionOpenAlbedoTexture_tr..."
+QT_MOC_LITERAL(4, 74, 38), // "on_actionOpenMetallicTexture_..."
+QT_MOC_LITERAL(5, 113, 39), // "on_actionOpenRoughnessTexture..."
+QT_MOC_LITERAL(6, 153, 46), // "on_actionOpenAmbientOcclusion..."
+QT_MOC_LITERAL(7, 200, 38), // "on_actionOpenEmissiveTexture_..."
+QT_MOC_LITERAL(8, 239, 42), // "on_actionOpenDisplacementText..."
+QT_MOC_LITERAL(9, 282, 36), // "on_actionSaveAlbedoTexture_tr..."
+QT_MOC_LITERAL(10, 319, 38), // "on_actionSaveMetallicTexture_..."
+QT_MOC_LITERAL(11, 358, 39), // "on_actionSaveRoughnessTexture..."
+QT_MOC_LITERAL(12, 398, 46), // "on_actionSaveAmbientOcclusion..."
+QT_MOC_LITERAL(13, 445, 38), // "on_actionSaveEmissiveTexture_..."
+QT_MOC_LITERAL(14, 484, 42), // "on_actionSaveDisplacementText..."
+QT_MOC_LITERAL(15, 527, 34), // "on_actionSaveAllTextures_trig..."
+QT_MOC_LITERAL(16, 562, 38), // "on_actionActivateAlbedoTextur..."
+QT_MOC_LITERAL(17, 601, 8), // "_enabled"
+QT_MOC_LITERAL(18, 610, 40), // "on_actionActivateMetallicText..."
+QT_MOC_LITERAL(19, 651, 41), // "on_actionActivateRoughnessTex..."
+QT_MOC_LITERAL(20, 693, 48), // "on_actionActivateAmbientOcclu..."
+QT_MOC_LITERAL(21, 742, 40), // "on_actionActivateEmissiveText..."
+QT_MOC_LITERAL(22, 783, 44), // "on_actionActivateDisplacement..."
+QT_MOC_LITERAL(23, 828, 33), // "on_actionSetStrokeWidth_trigg..."
+QT_MOC_LITERAL(24, 862, 27), // "on_actionSetPaint_triggered"
+QT_MOC_LITERAL(25, 890, 30), // "on_actionClearActive_triggered"
+QT_MOC_LITERAL(26, 921, 27), // "on_actionClearAll_triggered"
+QT_MOC_LITERAL(27, 949, 35), // "on_actionSetEmissiveColor_tri..."
+QT_MOC_LITERAL(28, 985, 31), // "on_actionCenterCamera_triggered"
+QT_MOC_LITERAL(29, 1017, 32), // "on_actionToggleWireframe_toggled"
+QT_MOC_LITERAL(30, 1050, 28), // "on_actionDefaultView_toggled"
+QT_MOC_LITERAL(31, 1079, 28), // "on_actionTextureView_toggled"
+QT_MOC_LITERAL(32, 1108, 27), // "on_actionRenderView_toggled"
+QT_MOC_LITERAL(33, 1136, 23) // "on_actionUvView_toggled"
 
     },
-    "MeshTool\0on_actionOpen_triggered\0\0"
-    "on_actionOpenAlbedoTexture_triggered\0"
+    "MeshPainter\0on_actionOpen_triggered\0"
+    "\0on_actionOpenAlbedoTexture_triggered\0"
     "on_actionOpenMetallicTexture_triggered\0"
     "on_actionOpenRoughnessTexture_triggered\0"
     "on_actionOpenAmbientOcclusionTexture_triggered\0"
@@ -101,7 +101,7 @@ QT_MOC_LITERAL(33, 1133, 23) // "on_actionUvView_toggled"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_MeshTool[] = {
+static const uint qt_meta_data_MeshPainter[] = {
 
  // content:
        7,       // revision
@@ -183,10 +183,10 @@ static const uint qt_meta_data_MeshTool[] = {
        0        // eod
 };
 
-void MeshTool::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void MeshPainter::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        MeshTool *_t = static_cast<MeshTool *>(_o);
+        MeshPainter *_t = static_cast<MeshPainter *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->on_actionOpen_triggered(); break;
@@ -225,28 +225,28 @@ void MeshTool::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
     }
 }
 
-QT_INIT_METAOBJECT const QMetaObject MeshTool::staticMetaObject = {
-    { &QMainWindow::staticMetaObject, qt_meta_stringdata_MeshTool.data,
-      qt_meta_data_MeshTool,  qt_static_metacall, nullptr, nullptr}
+QT_INIT_METAOBJECT const QMetaObject MeshPainter::staticMetaObject = {
+    { &QMainWindow::staticMetaObject, qt_meta_stringdata_MeshPainter.data,
+      qt_meta_data_MeshPainter,  qt_static_metacall, nullptr, nullptr}
 };
 
 
-const QMetaObject *MeshTool::metaObject() const
+const QMetaObject *MeshPainter::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *MeshTool::qt_metacast(const char *_clname)
+void *MeshPainter::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_MeshTool.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_MeshPainter.stringdata0))
         return static_cast<void*>(this);
-    if (!strcmp(_clname, "Ui::MeshTool"))
-        return static_cast< Ui::MeshTool*>(this);
+    if (!strcmp(_clname, "Ui::MeshPainter"))
+        return static_cast< Ui::MeshPainter*>(this);
     return QMainWindow::qt_metacast(_clname);
 }
 
-int MeshTool::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int MeshPainter::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QMainWindow::qt_metacall(_c, _id, _a);
     if (_id < 0)

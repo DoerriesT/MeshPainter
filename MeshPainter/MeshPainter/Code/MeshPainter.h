@@ -1,15 +1,15 @@
 #pragma once
 #include <QMainWindow>
-#include "ui_MeshTool.h"
+#include "ui_MeshPainter.h"
 #include <mutex>
 
-class MeshTool : public QMainWindow, public Ui::MeshTool
+class MeshPainter : public QMainWindow, public Ui::MeshPainter
 {
 	Q_OBJECT
 
 public:
-	MeshTool(QWidget *parent = Q_NULLPTR);
-	~MeshTool();
+	MeshPainter(QWidget *parent = Q_NULLPTR);
+	~MeshPainter();
 
 private:
 	std::mutex loadingMeshMutex;
