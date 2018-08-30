@@ -906,16 +906,38 @@ void GLWidget::paint()
 	}
 
 	// determine the amount of points to draw into the texture
-	unsigned int pointCount = glm::round(glm::distance(mouseCoord, prevMouseCoord));
+	unsigned int pointCount = glm::ceil(glm::distance(mouseCoord, prevMouseCoord));
+
+	glm::vec2 textureSize(paintTextureWidth, paintTextureHeight);
 
 	// read all texture coordinates on the line
-	std::vector<glm::vec4> coords;
+	std::vector<glm::vec2> coords;
 	for (unsigned int i = 0; i < pointCount; ++i)
 	{
 		glm::vec2 coord = glm::mix(prevMouseCoord, mouseCoord, float(i) / pointCount);
 		glm::vec4 data;
 		funcs->glReadPixels(GLint(coord.x), height - GLint(coord.y), 1, 1, GL_RGBA, GL_FLOAT, &data);
-		coords.push_back(data);
+
+		// a coordinate is only valid if marked by the fragment shader in the previous draw pass
+		if (data.b > 0)
+		{
+			// if there is a previous texcoord available, try to fill in missing points. this trick is
+			// unfortunately barely better than not doing it at all, showing the limits of this technique
+			//if (!coords.empty())
+			//{
+			//	glm::vec2 previousCoord(coords.back());
+			//	glm::vec2 currentCoord(data);
+			//
+			//	const float densityMult = 2.0f;
+			//	unsigned int fillCount = glm::ceil(glm::distance(currentCoord * textureSize, previousCoord * textureSize)) * densityMult;
+			//
+			//	for (unsigned int j = 1; j < fillCount; ++j)
+			//	{
+			//		coords.push_back(glm::mix(previousCoord, currentCoord, float(j) / fillCount));
+			//	}
+			//}
+			coords.push_back(data);
+		}
 	}
 
 	prevMouseCoord = mouseCoord;
@@ -941,20 +963,14 @@ void GLWidget::paint()
 	funcs->glEnableVertexAttribArray(0);
 
 	// iterate over all texture coordinates and draw a point
-	for (glm::vec4 &data : coords)
+	for (glm::vec2 &paintCoord : coords)
 	{
-		// a coordinate is only valid if marked by the fragment shader in the previous draw pass
-		if (data.b > 0)
-		{
-			glm::vec2 paintCoord(data.x, data.y);
+		glm::mat4 transform = glm::translate(glm::mat4(), glm::vec3(paintCoord * 2.0f - 1.0f, 0.0f))
+			* glm::scale(glm::mat4(), glm::vec3((1.0f / paintTextureWidth) * strokeWidth, (1.0f / paintTextureHeight) * strokeWidth, 1.0f));
 
-			glm::mat4 transform = glm::translate(glm::mat4(), glm::vec3(paintCoord * 2.0f - 1.0f, 0.0f))
-				* glm::scale(glm::mat4(), glm::vec3((1.0f / paintTextureWidth) * strokeWidth, (1.0f / paintTextureHeight) * strokeWidth, 1.0f));
+		uTransformationP.set(transform);
 
-			uTransformationP.set(transform);
-
-			funcs->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-		}
+		funcs->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 	}
 
 	// reset state to default
