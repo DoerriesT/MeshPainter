@@ -1,4 +1,7 @@
 # MeshPainter
+
+![MeshPainter](meshpainter.png?raw=true "Painting a smiley on Suzanne")
+
 A proof of concept tool for painting textures in 3D, written in C++/Qt/OpenGL. The tool allows to paint a set of PBR ttextures of a single mesh. Since it is only a proof of concept, it currently only supports a single material and UV set per mesh. This is a list of the features:
 
 - Paint albedo, metallic, roughness, ambient occlusion, emissive and displacement textures
